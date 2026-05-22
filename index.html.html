@@ -1,0 +1,1870 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🔮 하이브리드 점술 상담 시스템</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Noto+Serif+KR:wght@300;400;600&family=Cinzel:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-deep: #070510;
+    --bg-mid: #0e0b1f;
+    --bg-card: #13102a;
+    --bg-input: #1a1535;
+    --purple-dark: #2d1b69;
+    --purple-mid: #5b2d8e;
+    --purple-glow: #8b5cf6;
+    --purple-light: #c4b5fd;
+    --gold: #f5c842;
+    --gold-dim: #a8852a;
+    --teal: #2dd4bf;
+    --rose: #fb7185;
+    --text-primary: #e8e0ff;
+    --text-secondary: #9d8ec0;
+    --text-dim: #5a4d7a;
+    --border: #2a2050;
+    --border-glow: #5b2d8e;
+    --shadow-purple: 0 0 30px rgba(139, 92, 246, 0.15);
+    --shadow-gold: 0 0 20px rgba(245, 200, 66, 0.1);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg-deep);
+    color: var(--text-primary);
+    font-family: 'Noto Serif KR', serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    cursor: default;
+  }
+
+  /* ── 별 배경 ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(1px 1px at 20% 30%, rgba(196,181,253,0.6) 0%, transparent 100%),
+      radial-gradient(1px 1px at 80% 10%, rgba(196,181,253,0.4) 0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 50% 60%, rgba(245,200,66,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 10% 80%, rgba(196,181,253,0.3) 0%, transparent 100%),
+      radial-gradient(1px 1px at 90% 70%, rgba(196,181,253,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 35% 90%, rgba(245,200,66,0.3) 0%, transparent 100%),
+      radial-gradient(1px 1px at 70% 40%, rgba(196,181,253,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 15% 50%, rgba(196,181,253,0.3) 0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 60% 20%, rgba(245,200,66,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 45% 75%, rgba(196,181,253,0.5) 0%, transparent 100%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 40% at 20% 50%, rgba(45,27,105,0.3) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 60% at 80% 30%, rgba(91,45,142,0.2) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 30% at 60% 80%, rgba(45,27,105,0.2) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrapper {
+    position: relative;
+    z-index: 1;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 40px 20px 80px;
+  }
+
+  /* ── 헤더 ── */
+  header {
+    text-align: center;
+    padding: 60px 0 50px;
+  }
+
+  .header-sigil {
+    font-size: 48px;
+    display: block;
+    margin-bottom: 16px;
+    filter: drop-shadow(0 0 20px rgba(245,200,66,0.6));
+    animation: float 4s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  header h1 {
+    font-family: 'Cinzel Decorative', cursive;
+    font-size: clamp(18px, 4vw, 28px);
+    color: var(--gold);
+    letter-spacing: 0.08em;
+    text-shadow: 0 0 30px rgba(245,200,66,0.5), 0 0 60px rgba(245,200,66,0.2);
+    margin-bottom: 8px;
+  }
+
+  header .subtitle {
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    color: var(--text-dim);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+  }
+
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 30px 0;
+  }
+
+  .divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--border-glow), transparent);
+  }
+
+  .divider-icon {
+    color: var(--gold-dim);
+    font-size: 16px;
+  }
+
+  /* ── API 설정 ── */
+  .api-section {
+    background: linear-gradient(135deg, var(--bg-card), rgba(45,27,105,0.3));
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 32px;
+    box-shadow: var(--shadow-purple);
+  }
+
+  .api-section summary {
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    color: var(--gold);
+    letter-spacing: 0.15em;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    list-style: none;
+    user-select: none;
+  }
+
+  .api-section summary::-webkit-details-marker { display: none; }
+  .api-section summary::before { content: '▸'; transition: transform 0.3s; }
+  .api-section[open] summary::before { transform: rotate(90deg); }
+
+  .api-inner { margin-top: 20px; }
+
+  .api-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 12px;
+  }
+
+  .api-note {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-top: 8px;
+    line-height: 1.6;
+  }
+
+  .api-note a { color: var(--purple-light); }
+
+  /* ── 섹션 카드 ── */
+  .card {
+    background: linear-gradient(135deg, var(--bg-card) 0%, rgba(19,16,42,0.8) 100%);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 32px;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow-purple);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--purple-glow), var(--gold-dim), var(--purple-glow), transparent);
+    opacity: 0.6;
+  }
+
+  .card-title {
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    color: var(--gold);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .card-title-icon { font-size: 18px; }
+
+  /* ── 폼 요소 ── */
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .form-grid.three { grid-template-columns: 1fr 1fr 1fr; }
+  .form-grid.four { grid-template-columns: 1fr 1fr 1fr 1fr; }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .field.full { grid-column: 1 / -1; }
+
+  label {
+    font-size: 11px;
+    color: var(--text-secondary);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  input[type="text"],
+  input[type="number"],
+  input[type="password"],
+  select,
+  textarea {
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text-primary);
+    font-family: 'Noto Serif KR', serif;
+    font-size: 14px;
+    padding: 12px 16px;
+    outline: none;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--purple-glow);
+    box-shadow: 0 0 0 3px rgba(139,92,246,0.15), inset 0 0 10px rgba(139,92,246,0.05);
+  }
+
+  select { cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238b5cf6' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 40px; }
+
+  select option { background: var(--bg-card); color: var(--text-primary); }
+
+  textarea { resize: vertical; min-height: 100px; }
+
+  /* 음력/양력 토글 */
+  .calendar-toggle {
+    display: flex;
+    gap: 8px;
+  }
+
+  .calendar-toggle label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    text-transform: none;
+    font-size: 13px;
+    color: var(--text-secondary);
+    letter-spacing: 0;
+  }
+
+  .calendar-toggle input[type="radio"] {
+    appearance: none;
+    width: 16px; height: 16px;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    background: var(--bg-input);
+    padding: 0;
+    cursor: pointer;
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .calendar-toggle input[type="radio"]:checked {
+    border-color: var(--purple-glow);
+    background: var(--purple-glow);
+    box-shadow: 0 0 8px rgba(139,92,246,0.5);
+  }
+
+  /* 성별 토글 */
+  .gender-toggle {
+    display: flex;
+    gap: 8px;
+  }
+
+  .gender-btn {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg-input);
+    color: var(--text-secondary);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+    font-family: 'Noto Serif KR', serif;
+  }
+
+  .gender-btn.active {
+    border-color: var(--purple-glow);
+    background: rgba(139,92,246,0.15);
+    color: var(--purple-light);
+    box-shadow: 0 0 12px rgba(139,92,246,0.2);
+  }
+
+  /* ── 타로 카드 ── */
+  .tarot-hint {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(245,200,66,0.08);
+    border: 1px solid rgba(245,200,66,0.2);
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-size: 12px;
+    color: var(--gold);
+    margin-bottom: 20px;
+  }
+
+  .tarot-cards-container { display: flex; flex-direction: column; gap: 16px; }
+
+  .tarot-card-row {
+    background: rgba(10,7,28,0.6);
+    border: 1px solid rgba(91,45,142,0.3);
+    border-radius: 14px;
+    padding: 20px;
+    position: relative;
+    animation: slideIn 0.3s ease;
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .tarot-card-num {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    color: var(--purple-light);
+    letter-spacing: 0.2em;
+    margin-bottom: 12px;
+  }
+
+  .tarot-row-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px;
+  }
+
+  .remove-card-btn {
+    position: absolute;
+    top: 12px; right: 12px;
+    background: rgba(251,113,133,0.1);
+    border: 1px solid rgba(251,113,133,0.2);
+    border-radius: 6px;
+    color: var(--rose);
+    font-size: 11px;
+    padding: 4px 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .remove-card-btn:hover {
+    background: rgba(251,113,133,0.2);
+    box-shadow: 0 0 8px rgba(251,113,133,0.2);
+  }
+
+  .add-card-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 14px;
+    margin-top: 16px;
+    background: transparent;
+    border: 1px dashed rgba(91,45,142,0.5);
+    border-radius: 12px;
+    color: var(--purple-light);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-family: 'Noto Serif KR', serif;
+  }
+
+  .add-card-btn:hover {
+    border-color: var(--purple-glow);
+    background: rgba(91,45,142,0.1);
+    box-shadow: 0 0 20px rgba(139,92,246,0.1);
+  }
+
+  /* ── 실행 버튼 ── */
+  .generate-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    width: 100%;
+    padding: 22px;
+    background: linear-gradient(135deg, #3d1f8a 0%, #5b2d8e 40%, #7c3aed 70%, #8b5cf6 100%);
+    border: none;
+    border-radius: 16px;
+    color: #fff;
+    font-family: 'Cinzel', serif;
+    font-size: 15px;
+    letter-spacing: 0.2em;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s;
+    box-shadow: 0 4px 30px rgba(91,45,142,0.4), 0 0 60px rgba(139,92,246,0.1);
+    margin: 12px 0 32px;
+  }
+
+  .generate-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(245,200,66,0.15) 0%, transparent 50%);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .generate-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 40px rgba(91,45,142,0.6), 0 0 80px rgba(139,92,246,0.2); }
+  .generate-btn:hover::before { opacity: 1; }
+  .generate-btn:active { transform: translateY(0); }
+  .generate-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  .btn-icon { font-size: 22px; filter: drop-shadow(0 0 10px rgba(245,200,66,0.6)); }
+
+  /* ── 로딩 ── */
+  .loading-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(7,5,16,0.9);
+    z-index: 100;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    backdrop-filter: blur(4px);
+  }
+
+  .loading-overlay.show { display: flex; }
+
+  .loading-sigil {
+    font-size: 60px;
+    animation: spin 3s linear infinite;
+    filter: drop-shadow(0 0 30px rgba(245,200,66,0.7));
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .loading-text {
+    font-family: 'Cinzel', serif;
+    font-size: 14px;
+    color: var(--gold);
+    letter-spacing: 0.3em;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+
+  .loading-dots { display: flex; gap: 8px; }
+
+  .loading-dots span {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--purple-glow);
+    animation: dotBounce 1.2s ease-in-out infinite;
+  }
+
+  .loading-dots span:nth-child(2) { animation-delay: 0.2s; background: var(--gold); }
+  .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes dotBounce {
+    0%, 80%, 100% { transform: scale(0.6); opacity: 0.5; }
+    40% { transform: scale(1.2); opacity: 1; }
+  }
+
+  /* ── 결과 영역 ── */
+  .output-section { display: none; }
+  .output-section.show { display: block; }
+
+  .output-box {
+    background: linear-gradient(160deg, #0a0618 0%, #0e0b1f 100%);
+    border: 1px solid var(--border-glow);
+    border-radius: 20px;
+    padding: 32px;
+    white-space: pre-wrap;
+    font-size: 14px;
+    line-height: 1.9;
+    color: var(--text-primary);
+    min-height: 200px;
+    box-shadow: 0 0 40px rgba(91,45,142,0.2), inset 0 0 40px rgba(7,5,16,0.5);
+    margin-bottom: 16px;
+    position: relative;
+  }
+
+  .output-box::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(to right, transparent, var(--gold), var(--purple-glow), var(--gold), transparent);
+    border-radius: 20px 20px 0 0;
+  }
+
+  .copy-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, rgba(245,200,66,0.1), rgba(245,200,66,0.05));
+    border: 1px solid rgba(245,200,66,0.3);
+    border-radius: 12px;
+    color: var(--gold);
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    letter-spacing: 0.15em;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+
+  .copy-btn:hover {
+    background: rgba(245,200,66,0.15);
+    box-shadow: 0 0 20px rgba(245,200,66,0.15);
+  }
+
+  .copy-btn.copied {
+    background: rgba(45,212,191,0.1);
+    border-color: rgba(45,212,191,0.3);
+    color: var(--teal);
+  }
+
+  /* ── 에러 ── */
+  .error-box {
+    background: rgba(251,113,133,0.05);
+    border: 1px solid rgba(251,113,133,0.2);
+    border-radius: 12px;
+    padding: 20px;
+    color: var(--rose);
+    font-size: 13px;
+    line-height: 1.7;
+    display: none;
+  }
+
+  .error-box.show { display: block; }
+
+  /* ── 반응형 ── */
+  @media (max-width: 600px) {
+    .form-grid, .form-grid.three, .form-grid.four { grid-template-columns: 1fr; }
+    .api-row { grid-template-columns: 1fr; }
+    .tarot-row-grid { grid-template-columns: 1fr 1fr; }
+    .card { padding: 20px; }
+    header { padding: 40px 0 30px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="loading-sigil">⚗️</div>
+  <div class="loading-text">운명의 실을 읽는 중...</div>
+  <div class="loading-dots">
+    <span></span><span></span><span></span>
+  </div>
+</div>
+
+<div class="wrapper">
+
+  <!-- ── 헤더 ── -->
+  <header>
+    <span class="header-sigil">🔮</span>
+    <h1>Hybrid Oracle System</h1>
+    <div class="subtitle">六術合一 · 하이브리드 점술 상담 시스템</div>
+    <div class="divider"><span class="divider-icon">✦</span></div>
+  </header>
+
+  <!-- ── API 설정 ── -->
+  <details class="api-section card" id="apiSection">
+    <summary>⚙️ &nbsp;API 설정</summary>
+    <div class="api-inner">
+      <div class="api-row">
+        <div class="field">
+          <label>AI 제공사 선택</label>
+          <select id="apiProvider" onchange="updateApiPlaceholder()">
+            <option value="gemini">Google Gemini</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Gemini API 키 입력</label>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <input type="password" id="apiKey" placeholder="AIza..." autocomplete="off" style="flex:1;" oninput="saveApiKey()">
+            <span id="apiSavedBadge" style="display:none;font-size:11px;color:var(--teal);white-space:nowrap;letter-spacing:0.05em;">✓ 저장됨</span>
+          </div>
+        </div>
+      </div>
+      <p class="api-note">
+        🔐 API 키는 이 브라우저에 암호화 저장되며 외부로 전송되지 않습니다. 한 번 입력하면 다음에 접속해도 자동으로 불러옵니다.<br>
+        • Gemini 키 무료 발급: <a href="https://aistudio.google.com/app/apikey" target="_blank">aistudio.google.com/app/apikey</a>
+        &nbsp;(Google 계정으로 로그인 후 "Create API key" 클릭)
+      </p>
+    </div>
+  </details>
+
+  <!-- ── 고객 정보 ── -->
+  <div class="card">
+    <div class="card-title">
+      <span class="card-title-icon">👤</span>
+      고객 기본 정보
+    </div>
+
+    <div class="form-grid" style="margin-bottom:16px">
+      <div class="field">
+        <label>고객 이름</label>
+        <input type="text" id="clientName" placeholder="홍길동">
+      </div>
+      <div class="field">
+        <label>성별</label>
+        <div class="gender-toggle">
+          <button class="gender-btn active" id="genderM" onclick="setGender('남')">♂ 남성</button>
+          <button class="gender-btn" id="genderF" onclick="setGender('여')">♀ 여성</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-grid" style="grid-template-columns:2fr 1fr 1fr 1fr 1fr; gap:12px; margin-bottom:16px">
+      <div class="field">
+        <label>연도 (년)</label>
+        <input type="number" id="byear" placeholder="1990" min="1900" max="2030">
+      </div>
+      <div class="field">
+        <label>월</label>
+        <input type="number" id="bmonth" placeholder="7" min="1" max="12">
+      </div>
+      <div class="field">
+        <label>일</label>
+        <input type="number" id="bday" placeholder="15" min="1" max="31">
+      </div>
+      <div class="field">
+        <label>시 (0~23)</label>
+        <input type="number" id="bhour" placeholder="14" min="0" max="23">
+      </div>
+      <div class="field">
+        <label>분 (0~59)</label>
+        <input type="number" id="bmin" placeholder="30" min="0" max="59">
+      </div>
+    </div>
+    <div class="field" style="margin-bottom:16px">
+      <div class="calendar-toggle">
+        <label style="text-transform:none;font-size:13px;letter-spacing:0;color:var(--text-secondary);cursor:pointer;display:flex;align-items:center;gap:6px;">
+          <input type="checkbox" id="timeUnknown" onchange="toggleTimeUnknown()" style="appearance:none;width:16px;height:16px;border:1px solid var(--border);border-radius:4px;background:var(--bg-input);padding:0;cursor:pointer;flex-shrink:0;transition:all 0.2s;">
+          ⏰ 태어난 시간을 모름
+        </label>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>달력 종류</label>
+      <div class="calendar-toggle">
+        <label><input type="radio" name="calendar" value="양력" checked> 양력</label>
+        <label><input type="radio" name="calendar" value="음력"> 음력</label>
+        <label><input type="radio" name="calendar" value="음력 윤달"> 음력 윤달</label>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 상담 질문 ── -->
+  <div class="card">
+    <div class="card-title">
+      <span class="card-title-icon">💬</span>
+      상담 질문
+    </div>
+
+    <div class="form-grid" style="margin-bottom:16px">
+      <div class="field">
+        <label>질문 유형</label>
+        <select id="questionType" onchange="updateTarotHint(); togglePartnerSection()">
+          <option value="">선택하세요</option>
+          <option value="연애/재회운">💕 연애 / 재회운</option>
+          <option value="궁합운">💑 궁합운</option>
+          <option value="금전/사업운">💰 금전 / 사업운</option>
+          <option value="직장/이직운">💼 직장 / 이직운</option>
+          <option value="문서운">📄 문서운</option>
+          <option value="합격운">🎯 합격운</option>
+          <option value="건강운">🌿 건강운</option>
+          <option value="대인관계">🤝 대인관계</option>
+          <option value="양자택일">⚖️ 양자택일 (어떤게 나을까요?)</option>
+          <option value="신년/종합운">🌟 신년 / 종합운</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field full">
+      <label>고객 질문 내용</label>
+      <textarea id="questionText" placeholder="고객이 물어본 구체적인 내용을 입력하세요. 예) 지금 만나는 사람이랑 결혼까지 갈 수 있을까요? 요즘 자꾸 싸우는데 헤어지는 게 나을까요?"></textarea>
+    </div>
+  </div>
+
+  <!-- ── 궁합 상대 정보 (궁합운 선택 시만 노출) ── -->
+  <div class="card" id="partnerSection" style="display:none; border-color: rgba(251,113,133,0.3);">
+    <div class="card-title">
+      <span class="card-title-icon">💑</span>
+      상대방 정보
+    </div>
+
+    <div class="form-grid" style="margin-bottom:16px">
+      <div class="field">
+        <label>상대방 이름 (또는 호칭)</label>
+        <input type="text" id="partnerName" placeholder="김철수 / 썸남 / 전 남친 등">
+      </div>
+      <div class="field">
+        <label>성별</label>
+        <div class="gender-toggle">
+          <button class="gender-btn active" id="partnerGenderM" onclick="setPartnerGender('남')">♂ 남성</button>
+          <button class="gender-btn" id="partnerGenderF" onclick="setPartnerGender('여')">♀ 여성</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-grid" style="grid-template-columns:2fr 1fr 1fr 1fr 1fr; gap:12px; margin-bottom:16px">
+      <div class="field">
+        <label>연도 (년)</label>
+        <input type="number" id="pbyear" placeholder="1988" min="1900" max="2030">
+      </div>
+      <div class="field">
+        <label>월</label>
+        <input type="number" id="pbmonth" placeholder="3" min="1" max="12">
+      </div>
+      <div class="field">
+        <label>일</label>
+        <input type="number" id="pbday" placeholder="22" min="1" max="31">
+      </div>
+      <div class="field">
+        <label>시 (0~23)</label>
+        <input type="number" id="pbhour" placeholder="10" min="0" max="23">
+      </div>
+      <div class="field">
+        <label>분 (0~59)</label>
+        <input type="number" id="pbmin" placeholder="0" min="0" max="59">
+      </div>
+    </div>
+
+    <div style="display:flex; gap:20px; flex-wrap:wrap; margin-bottom:16px">
+      <div class="field">
+        <div class="calendar-toggle">
+          <label style="text-transform:none;font-size:13px;letter-spacing:0;color:var(--text-secondary);cursor:pointer;display:flex;align-items:center;gap:6px;">
+            <input type="checkbox" id="partnerTimeUnknown" onchange="togglePartnerTimeUnknown()" style="appearance:none;width:16px;height:16px;border:1px solid var(--border);border-radius:4px;background:var(--bg-input);padding:0;cursor:pointer;flex-shrink:0;transition:all 0.2s;">
+            ⏰ 상대방 태어난 시간을 모름
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>상대방 달력 종류</label>
+      <div class="calendar-toggle">
+        <label><input type="radio" name="partnerCalendar" value="양력" checked> 양력</label>
+        <label><input type="radio" name="partnerCalendar" value="음력"> 음력</label>
+        <label><input type="radio" name="partnerCalendar" value="음력 윤달"> 음력 윤달</label>
+      </div>
+    </div>
+
+  </div><!-- /partnerSection -->
+
+  <!-- ── 타로 카드 ── -->
+  <div class="card">
+    <div class="card-title">
+      <span class="card-title-icon">🃏</span>
+      타로 카드 입력
+    </div>
+
+    <!-- 배열법 선택 영역 -->
+    <div id="spreadSelectorWrap" style="display:none; margin-bottom:20px;">
+      <label style="font-size:11px;color:var(--text-secondary);letter-spacing:0.15em;text-transform:uppercase;display:block;margin-bottom:8px;">배열법 선택</label>
+      <select id="spreadSelector" onchange="onSpreadChange()" style="width:100%;background:var(--bg-input);border:1px solid var(--border);border-radius:10px;color:var(--text-primary);font-family:'Noto Serif KR',serif;font-size:14px;padding:12px 16px;outline:none;cursor:pointer;background-image:url('data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2712%27 height=%278%27 viewBox=%270 0 12 8%27%3E%3Cpath d=%27M1 1l5 5 5-5%27 stroke=%27%238b5cf6%27 stroke-width=%271.5%27 fill=%27none%27 stroke-linecap=%27round%27/%3E%3C/svg%3E');background-repeat:no-repeat;background-position:right 14px center;padding-right:40px;-webkit-appearance:none;appearance:none;">
+        <option value="">배열법을 선택하세요</option>
+      </select>
+      <div id="spreadDesc" style="margin-top:10px;font-size:12px;color:var(--text-dim);line-height:1.6;padding:10px 14px;background:rgba(91,45,142,0.08);border-radius:8px;display:none;"></div>
+    </div>
+
+    <div class="tarot-hint" id="tarotHint">
+      ✦ &nbsp;질문 유형을 먼저 선택하면 배열법이 안내됩니다
+    </div>
+
+    <div class="tarot-cards-container" id="tarotContainer"></div>
+
+    <button class="add-card-btn" id="addCardBtn" onclick="addTarotCard()" style="display:none;">
+      ＋ &nbsp;카드 추가하기 (선택 사항)
+    </button>
+  </div>
+
+  <!-- ── 생성 버튼 ── -->
+  <button class="generate-btn" id="generateBtn" onclick="generateReport()">
+    <span class="btn-icon">✨</span>
+    하이브리드 리포트 생성하기
+    <span class="btn-icon">✨</span>
+  </button>
+
+  <!-- ── 에러 ── -->
+  <div class="error-box" id="errorBox"></div>
+
+  <!-- ── 결과 ── -->
+  <div class="output-section" id="outputSection">
+    <div class="card">
+      <div class="card-title">
+        <span class="card-title-icon">📜</span>
+        상담 리포트 (카톡 전송용)
+      </div>
+      <div class="output-box" id="outputBox"></div>
+      <button class="copy-btn" id="copyBtn" onclick="copyReport()">
+        📋 &nbsp;카톡 전송용 복사하기
+      </button>
+    </div>
+  </div>
+
+</div><!-- /wrapper -->
+
+<script>
+// ════════════════════════════════════════════════
+//  데이터 정의
+// ════════════════════════════════════════════════
+
+const TAROT_DECKS = [
+  { value: '드래곤 타로',       label: '🐉 드래곤 타로' },
+  { value: '골든 아르누보',     label: '✨ 골든 아르누보 (금전운)' },
+  { value: '썬앤문',            label: '☀️ 썬앤문 (심리표현)' },
+  { value: '비트윈',            label: '🌊 비트윈 (운의 흐름)' },
+  { value: '유니버셜 웨이트',   label: '🃏 유니버셜 웨이트' },
+  { value: '싯다르타',          label: '🪷 싯다르타 (심리표현)' },
+  { value: '모던 위치',         label: '🌙 모던 위치' },
+  { value: '로제딕',            label: '🌹 로제딕' },
+  { value: '레노먼드',          label: '🔮 레노먼드' },
+  { value: '앤티크타로',        label: '🗝️ 앤티크타로' },
+];
+
+const MAJOR_ARCANA = [
+  '0. 광대 (The Fool)', '1. 마법사 (The Magician)', '2. 여사제 (The High Priestess)',
+  '3. 여황제 (The Empress)', '4. 황제 (The Emperor)', '5. 교황 (The Hierophant)',
+  '6. 연인 (The Lovers)', '7. 전차 (The Chariot)', '8. 힘 (Strength)',
+  '9. 은둔자 (The Hermit)', '10. 운명의 수레바퀴 (Wheel of Fortune)', '11. 정의 (Justice)',
+  '12. 매달린 사람 (The Hanged Man)', '13. 죽음 (Death)', '14. 절제 (Temperance)',
+  '15. 악마 (The Devil)', '16. 탑 (The Tower)', '17. 별 (The Star)',
+  '18. 달 (The Moon)', '19. 태양 (The Sun)', '20. 심판 (Judgement)',
+  '21. 세계 (The World)'
+];
+
+const SUITS = ['소드 (Swords)', '컵 (Cups)', '코인/펜타클 (Pentacles)', '완즈/지팡이 (Wands)'];
+
+const MINOR_RANKS = [
+  'Ace (1)', '2', '3', '4', '5', '6', '7', '8', '9', '10',
+  'Page (시종)', 'Knight (기사)', 'Queen (여왕)', 'King (왕)'
+];
+
+// 레노먼드 36장
+const LENORMAND_CARDS = [
+  '1. 기수 (Rider)', '2. 클로버 (Clover)', '3. 배 (Ship)', '4. 집 (House)',
+  '5. 나무 (Tree)', '6. 구름 (Clouds)', '7. 뱀 (Snake)', '8. 관 (Coffin)',
+  '9. 꽃다발 (Bouquet)', '10. 낫 (Scythe)', '11. 채찍 (Whip)', '12. 새 (Birds)',
+  '13. 아이 (Child)', '14. 여우 (Fox)', '15. 곰 (Bear)', '16. 별 (Star)',
+  '17. 황새 (Stork)', '18. 개 (Dog)', '19. 탑 (Tower)', '20. 정원 (Garden)',
+  '21. 산 (Mountain)', '22. 갈림길 (Crossroads)', '23. 쥐 (Mice)', '24. 하트 (Heart)',
+  '25. 반지 (Ring)', '26. 책 (Book)', '27. 편지 (Letter)', '28. 남자 (Gentleman)',
+  '29. 여자 (Lady)', '30. 백합 (Lily)', '31. 태양 (Sun)', '32. 달 (Moon)',
+  '33. 열쇠 (Key)', '34. 물고기 (Fish)', '35. 닻 (Anchor)', '36. 십자가 (Cross)',
+];
+
+// ════════════════════════════════════════════════
+//  배열법 정의 (PDF 기반)
+// ════════════════════════════════════════════════
+const SPREADS = {
+  '연애/재회운': [
+    {
+      key: 'romance',
+      name: '🌹 로맨스 스프레드 (5장) — 연애·썸',
+      desc: '솔로의 연애 가능성이나 썸 타는 단계의 흐름을 볼 때',
+      positions: [
+        '1번: 현재 상황',
+        '2번: 나의 상태 / 매력',
+        '3번: 상대방의 상태 / 성향',
+        '4번: 다가올 방해 / 장애물',
+        '5번: 3~6개월 내 결과',
+      ]
+    },
+    {
+      key: 'reunion',
+      name: '💫 부메랑 스프레드 (5장) — 재회',
+      desc: '이별 후 재회 가능성과 두 사람의 끈을 파헤칠 때',
+      positions: [
+        '1번: 나의 현재 속마음과 미련의 크기',
+        '2번: 상대방의 현재 속마음과 나에 대한 생각',
+        '3번: 헤어지게 된 결정적인 무의식적 원인',
+        '4번: 재회를 가로막는 현실적 장애물',
+        '5번: 연락이 올 타이밍 및 최종 재회 가능성',
+      ]
+    },
+  ],
+  '궁합운': [
+    {
+      key: 'bridge',
+      name: '🌉 다리(Bridge) 스프레드 (7장)',
+      desc: '두 사람의 상호작용과 관계 케미스트리 확인',
+      positions: [
+        '1번: 나의 외적 모습',
+        '2번: 나의 내적 본심',
+        '3번: 내가 보는 상대',
+        '4번: 상대의 외적 모습',
+        '5번: 관계의 현재 (두 사람을 잇는 케미스트리)',
+        '6번: 상대가 보는 나',
+        '7번: 상대의 내적 본심',
+      ]
+    },
+  ],
+  '금전/사업운': [
+    {
+      key: 'goldpot',
+      name: '🪙 황금 항아리 스프레드 (4장) — 금전',
+      desc: '돈의 흐름과 새는 구멍을 찾아내는 실속형 배열',
+      positions: [
+        '1번: 현재 재정 상태와 소비 습관',
+        '2번: 수입을 늘릴 기회 / 들어올 돈 (들여오는 통로)',
+        '3번: 새어나가는 지출 / 금전적 리스크 (막아야 할 구멍)',
+        '4번: 향후 자금 흐름 전망 및 재테크 조언',
+      ]
+    },
+    {
+      key: 'compass',
+      name: '🧭 비즈니스 나침반 (6장) — 사업',
+      desc: '창업·사업 확장·매장 운영 흐름 진단',
+      positions: [
+        '1번: 현재 사업 성적 (중심)',
+        '2번: 내부적 강점',
+        '3번: 외부적 기회',
+        '4번: 리스크 / 자금 관리',
+        '5번: 가로막는 장애',
+        '6번: 최종 성과 / 수익',
+      ]
+    },
+  ],
+  '직장/이직운': [
+    {
+      key: 'career',
+      name: '🛤️ 커리어 갈림길 (6장)',
+      desc: '현재 직장 잔류 vs 이직을 동시에 비교 분석',
+      positions: [
+        '1번: 현재 직장에서의 입지와 스트레스 원인',
+        '2번: [잔류 시] 머물렀을 때의 업무 환경',
+        '3번: [잔류 시] 머물렀을 때의 연봉 / 비전',
+        '4번: [이직 시] 이직할 곳의 조직 문화',
+        '5번: [이직 시] 이직 시 얻게 될 대우 / 조건',
+        '6번: 가장 유리한 선택을 위한 최종 조언',
+      ]
+    },
+  ],
+  '문서운': [
+    {
+      key: 'contract',
+      name: '📜 계약 체결 스프레드 (4장)',
+      desc: '부동산 매매·계약서·소송 등 문서에 도장 찍어도 될지 판단',
+      positions: [
+        '1번: 이 계약/문서의 표면적 조건 (겉모습)',
+        '2번: 문서 이면에 숨겨진 독소 조항 / 리스크',
+        '3번: 계약 진행 시 내가 얻을 실질적 이득',
+        '4번: 최종 계약 성사 여부 및 주의사항',
+      ]
+    },
+  ],
+  '합격운': [
+    {
+      key: 'gate',
+      name: '🎯 등용문 스프레드 (4장)',
+      desc: '시험·면접·오디션 결과 예측 및 합격률 높이는 전략',
+      positions: [
+        '1번: 현재 준비 상태와 실력의 객관적 지표',
+        '2번: 시험 당일의 변수 / 면접관 성향·분위기',
+        '3번: 부족한 점을 보완할 마지막 핵심 팁',
+        '4번: 합격 / 승인 여부의 최종 결과',
+      ]
+    },
+  ],
+  '건강운': [
+    {
+      key: 'bio',
+      name: '🌿 바이오 밸런스 (4장)',
+      desc: '에너지 흐름과 컨디션 관리 조언 중심 리딩',
+      positions: [
+        '1번: 현재 전반적인 신체 에너지 레벨과 면역력',
+        '2번: 육체적 건강을 해치는 가장 큰 원인',
+        '3번: 정신·심리적 건강 상태 (스트레스)',
+        '4번: 활력을 되찾기 위한 건강 관리 조언',
+      ]
+    },
+  ],
+  '대인관계': [
+    {
+      key: 'social',
+      name: '🤝 소셜 스펙트럼 (4장)',
+      desc: '직장 상사·친구·시댁 등 인간관계 역학 분석',
+      positions: [
+        '1번: 내가 타인에게 보여주는 페르소나 (가면)',
+        '2번: 주변 사람들이 나를 평가하는 시선',
+        '3번: 현재 대인관계에서 발생하는 갈등의 본질',
+        '4번: 원만한 관계 유지를 위한 처세술 (조언)',
+      ]
+    },
+  ],
+  '양자택일': [
+    {
+      key: 'vspread',
+      name: '⚖️ V-스프레드 (5장)',
+      desc: '두 가지 대안(A냐 B냐)을 저울질할 때 쓰는 정석 배열',
+      positions: [
+        '1번: 현재의 나 (선택의 중심)',
+        '2번: A 선택의 과정',
+        '3번: A 선택의 결과',
+        '4번: B 선택의 과정',
+        '5번: B 선택의 결과',
+      ]
+    },
+  ],
+  '신년/종합운': [
+    {
+      key: 'wheel',
+      name: '🌟 12달 휠 스프레드 (13장) — 신년운세',
+      desc: '새해·생일 기점으로 향후 1년 흐름 / 시계 방향 원형 배치',
+      positions: [
+        '1번: 1월 (또는 상담달부터 1달째)',
+        '2번: 2달째',
+        '3번: 3달째',
+        '4번: 4달째',
+        '5번: 5달째',
+        '6번: 6달째',
+        '7번: 7달째',
+        '8번: 8달째',
+        '9번: 9달째',
+        '10번: 10달째',
+        '11번: 11달째',
+        '12번: 12달째',
+        '13번: 원의 정중앙 — 올해 전체를 관통하는 총운·핵심 주제',
+      ]
+    },
+    {
+      key: 'anchor',
+      name: '⚓ 십자가 & 앵커 스프레드 (5장) — 종합운',
+      desc: '특정 질문 없이 삶 전체를 포괄적으로 볼 때',
+      positions: [
+        '1번: 현재 나의 중심 (중앙)',
+        '2번: 영적·정신적 상태 (위)',
+        '3번: 직업·학업 상태 (아래)',
+        '4번: 대인·연애 상태 (좌)',
+        '5번: 금전·물질적 성과 (우)',
+      ]
+    },
+  ],
+};
+
+let gender = '남';
+let partnerGender = '남';
+let tarotCardCount = 0;
+
+// ════════════════════════════════════════════════
+//  UI 헬퍼
+// ════════════════════════════════════════════════
+
+function setGender(g) {
+  gender = g;
+  document.getElementById('genderM').classList.toggle('active', g === '남');
+  document.getElementById('genderF').classList.toggle('active', g === '여');
+}
+
+function setPartnerGender(g) {
+  partnerGender = g;
+  document.getElementById('partnerGenderM').classList.toggle('active', g === '남');
+  document.getElementById('partnerGenderF').classList.toggle('active', g === '여');
+}
+
+function toggleTimeUnknown() {
+  const checked = document.getElementById('timeUnknown').checked;
+  const hourInput = document.getElementById('bhour');
+  const minInput  = document.getElementById('bmin');
+  hourInput.disabled = checked;
+  minInput.disabled  = checked;
+  hourInput.style.opacity = checked ? '0.3' : '1';
+  minInput.style.opacity  = checked ? '0.3' : '1';
+  if (checked) { hourInput.value = ''; minInput.value = ''; }
+  // 체크박스 시각 업데이트
+  document.getElementById('timeUnknown').style.background = checked ? 'var(--purple-glow)' : 'var(--bg-input)';
+  document.getElementById('timeUnknown').style.borderColor = checked ? 'var(--purple-glow)' : 'var(--border)';
+}
+
+function togglePartnerTimeUnknown() {
+  const checked = document.getElementById('partnerTimeUnknown').checked;
+  const hourInput = document.getElementById('pbhour');
+  const minInput  = document.getElementById('pbmin');
+  hourInput.disabled = checked;
+  minInput.disabled  = checked;
+  hourInput.style.opacity = checked ? '0.3' : '1';
+  minInput.style.opacity  = checked ? '0.3' : '1';
+  if (checked) { hourInput.value = ''; minInput.value = ''; }
+  document.getElementById('partnerTimeUnknown').style.background = checked ? 'var(--purple-glow)' : 'var(--bg-input)';
+  document.getElementById('partnerTimeUnknown').style.borderColor = checked ? 'var(--purple-glow)' : 'var(--border)';
+}
+
+function togglePartnerSection() {
+  const type = document.getElementById('questionType').value;
+  const section = document.getElementById('partnerSection');
+  if (type === '궁합운') {
+    section.style.display = 'block';
+    section.style.animation = 'slideIn 0.3s ease';
+  } else {
+    section.style.display = 'none';
+  }
+}
+
+function updateApiPlaceholder() {
+  document.getElementById('apiKey').placeholder = 'AIza...';
+}
+
+// ── API 키 localStorage 저장/불러오기 ──
+function saveApiKey() {
+  const key = document.getElementById('apiKey').value;
+  if (key.trim()) {
+    localStorage.setItem('oracle_api_key', key);
+    const badge = document.getElementById('apiSavedBadge');
+    badge.style.display = 'inline';
+  }
+}
+
+function loadApiKey() {
+  const saved = localStorage.getItem('oracle_api_key');
+  if (saved) {
+    document.getElementById('apiKey').value = saved;
+    document.getElementById('apiSavedBadge').style.display = 'inline';
+    // 키가 이미 있으면 API 설정 섹션 닫아두기
+    document.getElementById('apiSection').removeAttribute('open');
+  } else {
+    // 키가 없으면 섹션 열어두기
+    document.getElementById('apiSection').setAttribute('open', '');
+  }
+}
+
+function updateTarotHint() {
+  const type = document.getElementById('questionType').value;
+  const hint = document.getElementById('tarotHint');
+  const selectorWrap = document.getElementById('spreadSelectorWrap');
+  const selector = document.getElementById('spreadSelector');
+  const container = document.getElementById('tarotContainer');
+  const addBtn = document.getElementById('addCardBtn');
+
+  // 컨테이너 초기화
+  container.innerHTML = '';
+  tarotCardCount = 0;
+  addBtn.style.display = 'none';
+  document.getElementById('spreadDesc').style.display = 'none';
+
+  if (!type || !SPREADS[type]) {
+    hint.style.display = 'block';
+    hint.textContent = '✦  질문 유형을 먼저 선택하면 배열법이 안내됩니다';
+    selectorWrap.style.display = 'none';
+    return;
+  }
+
+  hint.style.display = 'none';
+  selectorWrap.style.display = 'block';
+
+  // 배열법 옵션 채우기
+  const spreads = SPREADS[type];
+  selector.innerHTML = '<option value="">배열법을 선택하세요</option>' +
+    spreads.map((s, i) => `<option value="${i}">${s.name}</option>`).join('');
+}
+
+function onSpreadChange() {
+  const type = document.getElementById('questionType').value;
+  const idx  = document.getElementById('spreadSelector').value;
+  const container = document.getElementById('tarotContainer');
+  const addBtn = document.getElementById('addCardBtn');
+  const descEl = document.getElementById('spreadDesc');
+
+  container.innerHTML = '';
+  tarotCardCount = 0;
+
+  if (idx === '' || !SPREADS[type]) {
+    addBtn.style.display = 'none';
+    descEl.style.display = 'none';
+    return;
+  }
+
+  const spread = SPREADS[type][parseInt(idx)];
+
+  // 배열 설명 표시
+  descEl.textContent = '📖  ' + spread.desc;
+  descEl.style.display = 'block';
+
+  // 포지션별 카드 슬롯 자동 생성
+  spread.positions.forEach((pos, i) => {
+    addTarotCard(pos);
+  });
+
+  addBtn.style.display = 'flex';
+}
+
+// ════════════════════════════════════════════════
+//  현재 선택된 배열법 포지션 목록 반환
+// ════════════════════════════════════════════════
+function getCurrentPositions() {
+  const type = document.getElementById('questionType').value;
+  const idx  = document.getElementById('spreadSelector').value;
+  if (!type || idx === '' || !SPREADS[type]) return null;
+  return SPREADS[type][parseInt(idx)];
+}
+
+// ════════════════════════════════════════════════
+//  타로 카드 동적 추가
+// ════════════════════════════════════════════════
+
+function addTarotCard(positionLabel) {
+  tarotCardCount++;
+  const idx = tarotCardCount;
+  const container = document.getElementById('tarotContainer');
+  const label = positionLabel || `카드 ${idx}`;
+
+  const row = document.createElement('div');
+  row.className = 'tarot-card-row';
+  row.id = `tarotRow_${idx}`;
+
+  row.innerHTML = `
+    <div class="tarot-card-num">✦ ${label}</div>
+    <button class="remove-card-btn" onclick="removeTarotCard(${idx})">✕ 제거</button>
+    <div class="tarot-row-grid">
+
+      <!-- 1. 덱 선택 -->
+      <div class="field">
+        <label>타로 덱</label>
+        <select id="deck_${idx}" onchange="handleDeckChange(${idx})">
+          ${TAROT_DECKS.map(d => `<option value="${d.value}">${d.label}</option>`).join('')}
+        </select>
+      </div>
+
+      <!-- ── 일반 타로 영역 ── -->
+      <div id="normalTaroArea_${idx}" style="display:contents">
+        <!-- 2. 메이저/마이너 -->
+        <div class="field">
+          <label>분류</label>
+          <select id="type_${idx}" onchange="handleTypeChange(${idx})">
+            <option value="">선택</option>
+            <option value="major">메이저 아르카나</option>
+            <option value="minor">마이너 아르카나</option>
+          </select>
+        </div>
+
+        <!-- 3a. 메이저 카드명 -->
+        <div class="field" id="majorField_${idx}" style="display:none">
+          <label>카드명</label>
+          <select id="major_${idx}">
+            ${MAJOR_ARCANA.map(c => `<option value="${c}">${c}</option>`).join('')}
+          </select>
+        </div>
+
+        <!-- 3b. 마이너 원소 -->
+        <div class="field" id="suitField_${idx}" style="display:none">
+          <label>원소 (슈트)</label>
+          <select id="suit_${idx}">
+            ${SUITS.map(s => `<option value="${s}">${s}</option>`).join('')}
+          </select>
+        </div>
+
+        <!-- 4. 마이너 숫자/인물 -->
+        <div class="field" id="rankField_${idx}" style="display:none">
+          <label>숫자 / 인물</label>
+          <select id="rank_${idx}">
+            ${MINOR_RANKS.map(r => `<option value="${r}">${r}</option>`).join('')}
+          </select>
+        </div>
+
+        <!-- 5. 방향 (일반 타로) -->
+        <div class="field" id="dirFieldNormal_${idx}">
+          <label>방향</label>
+          <select id="dir_${idx}">
+            <option value="정방향">⬆ 정방향</option>
+            <option value="역방향">⬇ 역방향</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- ── 레노먼드 전용 영역 (초기 숨김) ── -->
+      <div class="field" id="lenormandArea_${idx}" style="display:none">
+        <label>레노먼드 카드</label>
+        <select id="lenormand_${idx}">
+          ${LENORMAND_CARDS.map(c => `<option value="${c}">${c}</option>`).join('')}
+        </select>
+      </div>
+
+    </div>
+  `;
+
+  container.appendChild(row);
+}
+
+function handleDeckChange(idx) {
+  const deck = document.getElementById(`deck_${idx}`).value;
+  const isLenormand = deck === '레노먼드';
+
+  // 일반 타로 필드들
+  const fields = ['type_', 'majorField_', 'suitField_', 'rankField_', 'dirFieldNormal_'];
+
+  if (isLenormand) {
+    // 일반 타로 숨기기
+    document.getElementById(`type_${idx}`).closest('.field').style.display = 'none';
+    document.getElementById(`majorField_${idx}`).style.display = 'none';
+    document.getElementById(`suitField_${idx}`).style.display = 'none';
+    document.getElementById(`rankField_${idx}`).style.display = 'none';
+    document.getElementById(`dirFieldNormal_${idx}`).style.display = 'none';
+    // 레노먼드 영역 표시
+    document.getElementById(`lenormandArea_${idx}`).style.display = '';
+  } else {
+    // 일반 타로 복구
+    document.getElementById(`type_${idx}`).closest('.field').style.display = '';
+    document.getElementById(`dirFieldNormal_${idx}`).style.display = '';
+    // 레노먼드 숨기기
+    document.getElementById(`lenormandArea_${idx}`).style.display = 'none';
+    // 분류에 따라 하위 필드 재조정
+    handleTypeChange(idx);
+  }
+}
+
+function removeTarotCard(idx) {
+  const el = document.getElementById(`tarotRow_${idx}`);
+  if (el) el.remove();
+}
+
+function handleTypeChange(idx) {
+  const val = document.getElementById(`type_${idx}`).value;
+  document.getElementById(`majorField_${idx}`).style.display = val === 'major' ? '' : 'none';
+  document.getElementById(`suitField_${idx}`).style.display  = val === 'minor' ? '' : 'none';
+  document.getElementById(`rankField_${idx}`).style.display  = val === 'minor' ? '' : 'none';
+}
+
+// ════════════════════════════════════════════════
+//  타로 카드 데이터 수집
+// ════════════════════════════════════════════════
+
+function collectTarotCards() {
+  const container = document.getElementById('tarotContainer');
+  const rows = container.querySelectorAll('.tarot-card-row');
+  const cards = [];
+
+  rows.forEach((row) => {
+    const id = row.id.replace('tarotRow_', '');
+    const posLabel = row.querySelector('.tarot-card-num')?.textContent?.replace('✦ ', '').trim() || `카드${id}`;
+    const deck = document.getElementById(`deck_${id}`)?.value || '';
+    const isLenormand = deck === '레노먼드';
+
+    let cardName = '(미입력)';
+    let dir = '-';
+
+    if (isLenormand) {
+      cardName = document.getElementById(`lenormand_${id}`)?.value || '(미입력)';
+      // 레노먼드는 정/역 없음
+      dir = '(레노먼드)';
+    } else {
+      const type = document.getElementById(`type_${id}`)?.value || '';
+      dir = document.getElementById(`dir_${id}`)?.value || '';
+
+      if (type === 'major') {
+        cardName = document.getElementById(`major_${id}`)?.value || '(미입력)';
+      } else if (type === 'minor') {
+        const suit = document.getElementById(`suit_${id}`)?.value || '';
+        const rank = document.getElementById(`rank_${id}`)?.value || '';
+        cardName = `${rank} of ${suit}`;
+      } else {
+        cardName = '(미입력)';
+        dir = '-';
+      }
+    }
+
+    cards.push(`[${posLabel}] 덱: ${deck} / 카드: ${cardName} / 방향: ${dir}`);
+  });
+
+  return cards;
+}
+
+// ════════════════════════════════════════════════
+//  프롬프트 구성
+// ════════════════════════════════════════════════
+
+function buildPrompt(data) {
+  const { name, gender, birthStr, sajuData, questionType, questionText, tarotCards, partnerInfo, spreadInfo } = data;
+
+  const partnerBlock = partnerInfo ? `
+## 상대방 정보 (궁합 상대)
+- 이름/호칭: ${partnerInfo.name}
+- 성별: ${partnerInfo.gender}
+- 생년월일시: ${partnerInfo.birthStr}
+${partnerInfo.saju || ''}
+` : '';
+
+  const partnerPromptExtra = partnerInfo ? `
+**궁합 분석 추가 지시**: 고객과 상대방 각각의 사주·별자리·숙요를 분석한 뒤, 두 사람의 에너지 상성, 감정 흐름의 차이, 관계의 장기적 흐름을 교집합으로 도출하세요.
+` : '';
+
+  const spreadBlock = spreadInfo ? `
+## 타로 배열법
+- 배열명: ${spreadInfo.name}
+- 설명: ${spreadInfo.desc}
+- 포지션 의미:
+${spreadInfo.positions.map(p => `  · ${p}`).join('\n')}
+` : '';
+
+  const tarotBlock = tarotCards.length > 0
+    ? tarotCards.join('\n')
+    : '(타로 카드 미입력)';
+
+  const now = new Date();
+  const todayStr = `${now.getFullYear()}년 ${now.getMonth()+1}월 ${now.getDate()}일`;
+  const yearStr  = `${now.getFullYear()}년 (${천간漢[(now.getFullYear()-4)%10]}${지지漢[((now.getFullYear()-4)%12+12)%12]}년)`;
+
+  return `당신은 10년 경력의 하이브리드 점술사입니다. 동양 명리학, 서양 점성술, 타로, 자미두수, 숙요점, 베다 점성술을 모두 통합하여 분석합니다.
+
+⚠️ 오늘 상담 날짜: ${todayStr} / 올해: ${yearStr} — 대운·세운·트랜짓 분석 시 반드시 이 연도를 기준으로 하세요.
+
+## 고객 정보
+- 이름: ${name}
+- 성별: ${gender}
+- 생년월일시: ${birthStr}
+- 질문 유형: ${questionType}
+- 질문 내용: ${questionText}
+
+## 사전 계산된 사주 데이터 (반드시 이 값을 그대로 사용하세요)
+${sajuData}
+${partnerBlock}${spreadBlock}
+## 타로 카드 배열 결과 (${tarotCards.length}장)
+${tarotBlock}
+
+---
+
+## 작업 지시 (2단계로 진행)
+
+### ★ 1단계: 5가지 점술 각각 실제 분석 (이 내용은 출력하지 말고 내부 메모로만 활용)
+
+아래 5가지를 위의 사주 데이터와 오늘 날짜를 바탕으로 실제로 계산·분석하세요.
+각 항목마다 질문("${questionText}")에 대한 답이 긍정적인지 부정적인지, 시기는 언제인지를 명확히 판단하세요.
+
+[사주 명리]
+- 일간 ${sajuData.includes('丁') ? '丁火' : ''}의 현재 대운·세운 흐름에서 질문과 관련된 운의 방향
+- 올해(${new Date().getFullYear()}년)와 이번 달 월운의 길흉 판단
+- 결론: 긍정 / 부정 / 시기 지연 중 하나로 명확히
+
+[자미두수]
+- 명반에서 질문 관련 궁(관록궁/부처궁/재백궁 등)의 주요 성좌 길흉
+- 현재 소한(流年·流月)의 영향
+- 결론: 긍정 / 부정 / 시기 지연 중 하나로 명확히
+
+[숙요점]
+- 생일 숙(宿) 계산 및 특성
+- 오늘(${new Date().getFullYear()}년 ${new Date().getMonth()+1}월 ${new Date().getDate()}일) 일진과의 상성
+- 결론: 좋은 시기 / 나쁜 시기 / 보통 중 하나로 명확히
+
+[베다 점성술]
+- 라시(태양궁) 및 현재 다샤·안타르다샤 행성
+- 해당 행성이 질문 영역에 미치는 영향
+- 결론: 긍정 / 부정 / 시기 지연 중 하나로 명확히
+
+[서양 점성술]
+- 태양궁 특성과 현재 주요 트랜짓 행성(목성·토성·천왕성 위치)
+- 트랜짓이 네이탈 차트에 미치는 영향
+- 결론: 긍정 / 부정 / 시기 지연 중 하나로 명확히
+
+---
+
+### ★ 2단계: 교집합 추출 → 최종 리포트 작성
+
+1단계 분석 결과를 놓고 아래 기준으로 교집합을 뽑으세요:
+
+**교집합 판단 기준:**
+- 5가지 중 3가지 이상이 같은 방향을 가리키면 → 그게 교집합 메시지
+- 긍정 신호가 많으면 → "될 가능성이 높다, 단 ~에 주의"
+- 부정/지연 신호가 많으면 → "지금 당장은 아니고, ~시기가 유리하다"
+- 엇갈리면 → "반반이다, 변수는 ~이다"
+
+**타로 카드는 별도로 해석하되**, 5가지 점술 교집합 결과와 타로 결과가 일치하는지 비교해서 최종 답을 강화하거나 보완하세요.
+${partnerPromptExtra}
+
+---
+
+## 최종 리포트 출력 (구분선부터 바로 시작. 인사말·분석과정·용어나열 절대 금지)
+
+말투: 다정한 동네 언니 + 뼈 때리는 팩폭. 구어체. 쉬운 말. 질문에 직접 답.
+
+━━━━━━━━━━━━━━━━━━━
+🔮 ${name}님 하이브리드 점술 리포트
+[${questionType}${spreadInfo ? ' · ' + spreadInfo.name.replace(/\(.*?\)/g,'').trim() : ''}]
+━━━━━━━━━━━━━━━━━━━
+
+✨ 지금 이 순간의 흐름
+
+(1단계에서 뽑은 교집합 메시지를 바탕으로 2~3문단. 점술 이름·전문용어 절대 금지. 질문("${questionText}")에 대한 답을 명확하게 포함. "될 것 같다 / 조금 기다려야 한다 / 지금 당장은 어렵다" 중 하나를 분명히 말하고, 그 이유를 쉬운 말로 설명. 최소 300자.)
+
+🃏 카드가 말하는 것
+
+(타로 포지션별로 "[포지션명] — [카드명] ([방향]): 해석" 형식으로. 포지션마다 2~3문장. 마지막에 "5가지 점술이 ~라고 보는데, 카드도 ~라고 하니 이 방향이 맞다 / 카드는 다른 말을 하는데 이게 변수다" 식으로 점술 교집합과 타로의 일치 여부를 한 줄로 연결.)
+
+⚡ 언니가 솔직하게 말할게
+
+(5가지 점술 + 타로가 공통으로 경고하는 것 2~3가지. 전문용어 없이. "야, 솔직히~" / "이건 좀 아프게 들릴 수 있는데~" 스타일. 각 항목 구체적으로.)
+
+💡 지금 당장 이것만 해
+
+(지금 이 시기에 맞는 행동 2~3가지. "이번 주 안에", "~하기 전에" 등 시점 포함. 막연한 말 금지.)
+
+🌙 지금 이 시기를 한 줄로
+
+(교집합 핵심을 압축한 짧은 문장 하나.)
+
+━━━━━━━━━━━━━━━━━━━
+💜 마치며
+(따뜻하고 힘이 되는 마무리 2문장. 질문 상황에 맞게 개인화.)
+━━━━━━━━━━━━━━━━━━━`;
+}
+
+// ════════════════════════════════════════════════
+//  만세력 계산 (천간·지지·일주 직접 계산)
+// ════════════════════════════════════════════════
+
+const 천간 = ['갑','을','병','정','무','기','경','신','임','계'];
+const 지지 = ['자','축','인','묘','진','사','오','미','신','유','술','해'];
+const 천간漢 = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
+const 지지漢 = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+const 오행천간 = ['木','木','火','火','土','土','金','金','水','水'];
+const 오행지지 = ['水','土','木','木','土','火','火','土','金','金','土','水'];
+
+// 양력 날짜 → 율리우스 일수
+function toJulian(y, m, d) {
+  if (m <= 2) { y--; m += 12; }
+  const A = Math.floor(y / 100);
+  const B = 2 - A + Math.floor(A / 4);
+  return Math.floor(365.25 * (y + 4716)) + Math.floor(30.6001 * (m + 1)) + d + B - 1524;
+}
+
+// 일주(日柱) 계산
+function calcDayPillar(y, m, d) {
+  const jd = toJulian(y, m, d);
+  const stem  = ((jd + 9) % 10 + 10) % 10;   // 천간 인덱스
+  const branch = ((jd + 1) % 12 + 12) % 12;  // 지지 인덱스
+  return {
+    천간idx: stem,
+    지지idx: branch,
+    천간: 천간漢[stem],
+    지지: 지지漢[branch],
+    오행: 오행천간[stem],
+    일주: 천간漢[stem] + 지지漢[branch]
+  };
+}
+
+// 연주(年柱) 계산 (입춘 기준 간략화 — 2/4 이전이면 전년도)
+function calcYearPillar(y, m, d) {
+  let year = y;
+  if (m === 1 || (m === 2 && d < 4)) year--;
+  const stem   = (year - 4) % 10;
+  const branch = (year - 4) % 12;
+  return {
+    천간: 천간漢[((stem % 10) + 10) % 10],
+    지지: 지지漢[((branch % 12) + 12) % 12]
+  };
+}
+
+// 월주(月柱) 계산 (절기 기준 간략화)
+// 절입일 근사: 매달 6일 또는 8일 전후
+const 절입일 = [6,4,6,5,6,6,7,7,8,8,7,7]; // 월별 절입 근사일
+function calcMonthPillar(y, m, d) {
+  let monthIdx = m - 1; // 0~11
+  if (d < 절입일[monthIdx]) monthIdx = (monthIdx - 1 + 12) % 12;
+  const yearStem = (y - 4) % 10;
+  const stem = (((yearStem % 5) * 2 + monthIdx) % 10 + 10) % 10;
+  const branch = (monthIdx + 2) % 12;
+  return {
+    천간: 천간漢[(stem + 10) % 10],
+    지지: 지지漢[branch]
+  };
+}
+
+// 시주(時柱) 계산
+function calcHourPillar(dayStem, hour) {
+  if (hour === null) return null;
+  // 시지: 23~00시=子(0), 01~02=丑(1), ... 2시간 단위
+  const branchIdx = Math.floor(((hour + 1) % 24) / 2);
+  const stemBase  = (dayStem % 5) * 2;
+  const stemIdx   = (stemBase + branchIdx) % 10;
+  return {
+    천간: 천간漢[stemIdx],
+    지지: 지지漢[branchIdx]
+  };
+}
+
+// 서양 별자리
+function calcZodiac(m, d) {
+  const signs = [
+    { name:'염소자리', end:[1,19] }, { name:'물병자리', end:[2,18] },
+    { name:'물고기자리', end:[3,20] }, { name:'양자리', end:[4,19] },
+    { name:'황소자리', end:[5,20] }, { name:'쌍둥이자리', end:[6,20] },
+    { name:'게자리', end:[7,22] }, { name:'사자자리', end:[8,22] },
+    { name:'처녀자리', end:[9,22] }, { name:'천칭자리', end:[10,22] },
+    { name:'전갈자리', end:[11,21] }, { name:'사수자리', end:[12,31] },
+  ];
+  for (const s of signs) {
+    if (m < s.end[0] || (m === s.end[0] && d <= s.end[1])) return s.name;
+  }
+  return '염소자리';
+}
+
+// 전체 사주 계산 → 프롬프트용 텍스트 반환
+function calcSaju(year, month, day, hour, calendarType) {
+  // 음력이면 AI에게 음력임을 알리고 양력 변환은 AI가 수행
+  if (calendarType !== '양력') {
+    return `(음력 ${year}년 ${month}월 ${day}일 — AI가 양력 변환 후 사주 계산 필요)`;
+  }
+
+  const y = parseInt(year), m = parseInt(month), d = parseInt(day);
+  const h = (hour !== null && hour !== '') ? parseInt(hour) : null;
+
+  const year_p  = calcYearPillar(y, m, d);
+  const month_p = calcMonthPillar(y, m, d);
+  const day_p   = calcDayPillar(y, m, d);
+  const hour_p  = h !== null ? calcHourPillar(day_p.천간idx, h) : null;
+
+  const zodiac = calcZodiac(m, d);
+
+  return `
+【사주 四柱】
+- 연주(年柱): ${year_p.천간}${year_p.지지}
+- 월주(月柱): ${month_p.천간}${month_p.지지}
+- 일주(日柱): ${day_p.천간}${day_p.지지} ← 일간: ${day_p.천간}(${천간[day_p.천간idx]}·${day_p.오행})
+- 시주(時柱): ${hour_p ? hour_p.천간 + hour_p.지지 : '(시간 미상 — 시주 생략)'}
+- 서양 태양궁: ${zodiac}
+
+※ 위 사주 데이터를 기반으로 분석하세요. 일간은 반드시 ${day_p.천간}(${천간[day_p.천간idx]})으로 고정하여 분석하세요.`;
+}
+
+// ════════════════════════════════════════════════
+//  API 호출 — Gemini 2.5 Flash (스트리밍)
+// ════════════════════════════════════════════════
+
+async function callGeminiAPI(apiKey, prompt, onChunk) {
+  const MODEL = 'gemini-2.5-flash-lite';
+  const URL   = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:streamGenerateContent?alt=sse&key=${apiKey}`;
+
+  const body = JSON.stringify({
+    contents: [{ parts: [{ text: prompt }] }],
+    generationConfig: { maxOutputTokens: 8000, temperature: 0.9 }
+  });
+
+  const res = await fetch(URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(`Gemini API 오류 (${res.status}): ${err?.error?.message || res.statusText}`);
+  }
+
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let fullText = '';
+  let buffer = '';
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+
+    buffer += decoder.decode(value, { stream: true });
+    const lines = buffer.split('\n');
+    buffer = lines.pop(); // 마지막 불완전한 줄은 버퍼에 보관
+
+    for (const line of lines) {
+      if (!line.startsWith('data: ')) continue;
+      const jsonStr = line.slice(6).trim();
+      if (!jsonStr || jsonStr === '[DONE]') continue;
+      try {
+        const parsed = JSON.parse(jsonStr);
+        const chunk  = parsed.candidates?.[0]?.content?.parts?.[0]?.text || '';
+        if (chunk) {
+          fullText += chunk;
+          onChunk(fullText); // 실시간으로 화면에 표시
+        }
+      } catch {}
+    }
+  }
+
+  return fullText;
+}
+
+// ════════════════════════════════════════════════
+//  메인 생성 함수
+// ════════════════════════════════════════════════
+
+async function generateReport() {
+  const name         = document.getElementById('clientName').value.trim();
+  const byear        = document.getElementById('byear').value.trim();
+  const bmonth       = document.getElementById('bmonth').value.trim();
+  const bday         = document.getElementById('bday').value.trim();
+  const timeUnknown  = document.getElementById('timeUnknown').checked;
+  const bhour        = document.getElementById('bhour').value.trim();
+  const bmin         = document.getElementById('bmin').value.trim();
+  const calType      = document.querySelector('input[name="calendar"]:checked').value;
+  const questionType = document.getElementById('questionType').value;
+  const questionText = document.getElementById('questionText').value.trim();
+  const apiKey       = document.getElementById('apiKey').value.trim();
+  const tarotCards   = collectTarotCards();
+  const currentSpread = getCurrentPositions();
+
+  // 궁합 상대 정보
+  let partnerInfo = null;
+  if (questionType === '궁합운') {
+    const pName    = document.getElementById('partnerName').value.trim();
+    const pYear    = document.getElementById('pbyear').value.trim();
+    const pMonth   = document.getElementById('pbmonth').value.trim();
+    const pDay     = document.getElementById('pbday').value.trim();
+    const pTimeUnk = document.getElementById('partnerTimeUnknown').checked;
+    const pHour    = document.getElementById('pbhour').value.trim();
+    const pMin     = document.getElementById('pbmin').value.trim();
+    const pCal     = document.querySelector('input[name="partnerCalendar"]:checked').value;
+    const pHourStr = pTimeUnk ? '(시간 미상)' : (pHour ? `${pHour}시 ${pMin ? pMin + '분' : ''}` : '(시간 미상)');
+    const pSaju    = pYear && pMonth && pDay
+      ? calcSaju(pYear, pMonth, pDay, pTimeUnk ? null : pHour, pCal)
+      : '(미입력)';
+    partnerInfo = {
+      name: pName || '상대방',
+      gender: partnerGender,
+      birthStr: `${pCal} ${pYear}년 ${pMonth}월 ${pDay}일 ${pHourStr}`,
+      saju: pSaju
+    };
+  }
+
+  const errorBox = document.getElementById('errorBox');
+  errorBox.classList.remove('show');
+
+  // 유효성 검사
+  const errors = [];
+  if (!name)         errors.push('고객 이름을 입력해주세요.');
+  if (!byear || !bmonth || !bday) errors.push('생년월일을 모두 입력해주세요.');
+  if (!questionType) errors.push('질문 유형을 선택해주세요.');
+  if (!questionText) errors.push('질문 내용을 입력해주세요.');
+  if (!apiKey)       errors.push('API 키를 입력해주세요. (상단 ⚙️ API 설정 클릭)');
+  if (questionType === '궁합운') {
+    if (!document.getElementById('pbyear').value || !document.getElementById('pbmonth').value || !document.getElementById('pbday').value)
+      errors.push('상대방 생년월일을 입력해주세요.');
+  }
+
+  if (errors.length > 0) {
+    errorBox.innerHTML = '⚠️ 입력 확인 필요:<br>' + errors.map(e => `• ${e}`).join('<br>');
+    errorBox.classList.add('show');
+    errorBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+
+  // 데이터 정리
+  const hourVal  = timeUnknown ? null : bhour;
+  const hourStr  = timeUnknown ? '(시간 미상)' : (bhour ? `${bhour}시 ${bmin ? bmin + '분' : ''}` : '(시간 미상)');
+  const birthStr = `${calType} ${byear}년 ${bmonth}월 ${bday}일 ${hourStr}`.trim();
+
+  // 만세력 계산
+  const sajuData = calcSaju(byear, bmonth, bday, timeUnknown ? null : bhour, calType);
+
+  const prompt = buildPrompt({
+    name, gender, birthStr, sajuData,
+    questionType, questionText, tarotCards,
+    partnerInfo, spreadInfo: currentSpread
+  });
+
+  // 로딩 시작
+  document.getElementById('loadingOverlay').classList.add('show');
+  document.getElementById('generateBtn').disabled = true;
+
+  // 출력 섹션 미리 열기 (스트리밍 실시간 표시)
+  const outputBox = document.getElementById('outputBox');
+  outputBox.textContent = '';
+  document.getElementById('outputSection').classList.add('show');
+
+  try {
+    await callGeminiAPI(apiKey, prompt, (text) => {
+      outputBox.textContent = text;
+    });
+    document.getElementById('outputSection').scrollIntoView({ behavior: 'smooth' });
+  } catch (err) {
+    document.getElementById('outputSection').classList.remove('show');
+    errorBox.innerHTML = `❌ 오류가 발생했습니다:<br>${err.message.replace(/\n/g,'<br>')}<br><br>💡 해결 방법:<br>• API 키가 올바른지 확인해주세요<br>• 인터넷 연결 상태를 확인해주세요`;
+    errorBox.classList.add('show');
+    errorBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  } finally {
+    document.getElementById('loadingOverlay').classList.remove('show');
+    document.getElementById('generateBtn').disabled = false;
+  }
+}
+
+// ════════════════════════════════════════════════
+//  복사 기능
+// ════════════════════════════════════════════════
+
+async function copyReport() {
+  const text = document.getElementById('outputBox').textContent;
+  const btn  = document.getElementById('copyBtn');
+
+  try {
+    await navigator.clipboard.writeText(text);
+    btn.classList.add('copied');
+    btn.textContent = '✅  복사 완료! 카톡에 붙여넣기 하세요';
+    setTimeout(() => {
+      btn.classList.remove('copied');
+      btn.textContent = '📋  카톡 전송용 복사하기';
+    }, 3000);
+  } catch {
+    // fallback
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    btn.classList.add('copied');
+    btn.textContent = '✅  복사 완료!';
+    setTimeout(() => {
+      btn.classList.remove('copied');
+      btn.textContent = '📋  카톡 전송용 복사하기';
+    }, 3000);
+  }
+}
+
+// ════════════════════════════════════════════════
+//  초기화
+// ════════════════════════════════════════════════
+// 카드는 질문 유형 → 배열법 선택 후 자동 생성됩니다
+loadApiKey();
+
+</script>
+</body>
+</html>
