@@ -577,7 +577,96 @@
 
   .error-box.show { display: block; }
 
-  /* ── 반응형 ── */
+  /* ── 이미지 업로드 ── */
+  .upload-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .upload-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .upload-box {
+    border: 1.5px dashed rgba(139,92,246,0.4);
+    border-radius: 12px;
+    padding: 16px;
+    cursor: pointer;
+    transition: all 0.3s;
+    background: rgba(10,7,28,0.4);
+    text-align: center;
+    min-height: 90px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .upload-box:hover {
+    border-color: var(--purple-glow);
+    background: rgba(91,45,142,0.1);
+  }
+
+  .upload-box.has-image {
+    border-color: var(--teal);
+    border-style: solid;
+    background: rgba(45,212,191,0.05);
+  }
+
+  .upload-box input[type="file"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    border: none;
+    background: none;
+  }
+
+  .upload-icon { font-size: 24px; }
+  .upload-label-text { font-size: 11px; color: var(--text-secondary); letter-spacing: 0.05em; }
+  .upload-filename { font-size: 11px; color: var(--teal); margin-top: 2px; word-break: break-all; }
+
+  .upload-preview {
+    width: 100%;
+    max-height: 80px;
+    object-fit: contain;
+    border-radius: 6px;
+    display: none;
+  }
+
+  .upload-clear-btn {
+    position: absolute;
+    top: 6px; right: 6px;
+    background: rgba(251,113,133,0.15);
+    border: 1px solid rgba(251,113,133,0.3);
+    border-radius: 4px;
+    color: var(--rose);
+    font-size: 10px;
+    padding: 2px 7px;
+    cursor: pointer;
+    z-index: 2;
+    display: none;
+  }
+
+  .upload-hint {
+    font-size: 11px;
+    color: var(--text-dim);
+    line-height: 1.6;
+    margin-top: 4px;
+  }
+
+  @media (max-width: 600px) {
+    .upload-grid { grid-template-columns: 1fr; }
+  }
   @media (max-width: 600px) {
     .form-grid, .form-grid.three, .form-grid.four { grid-template-columns: 1fr; }
     .api-row { grid-template-columns: 1fr; }
@@ -794,7 +883,78 @@
 
   </div><!-- /partnerSection -->
 
-  <!-- ── 타로 카드 ── -->
+  <!-- ── 점술 데이터 이미지 업로드 ── -->
+  <div class="card" style="border-color: rgba(245,200,66,0.2);">
+    <div class="card-title">
+      <span class="card-title-icon">📸</span>
+      점술 데이터 이미지 업로드
+      <span style="font-family:'Noto Serif KR';font-size:11px;color:var(--text-dim);letter-spacing:0;text-transform:none;margin-left:8px;font-weight:400;">(선택사항 — 있으면 훨씬 정확해요)</span>
+    </div>
+
+    <p class="upload-hint" style="margin-bottom:16px;">
+      📌 각 사이트에서 결과 화면을 <strong style="color:var(--gold)">스크린샷</strong> 찍어 업로드하세요.
+      없으면 AI가 생년월일로 추정하지만, 이미지가 있으면 전문 계산 결과를 그대로 활용해요.<br>
+      추천 사이트: 사주 → <a href="https://www.sajuplus.net" target="_blank" style="color:var(--purple-light)">sajuplus.net</a> &nbsp;|&nbsp;
+      서양 점성술 → <a href="https://www.astro.com" target="_blank" style="color:var(--purple-light)">astro.com</a> &nbsp;|&nbsp;
+      자미두수 → <a href="https://ziwei.club" target="_blank" style="color:var(--purple-light)">ziwei.club</a>
+    </p>
+
+    <div class="upload-grid">
+
+      <!-- 사주 -->
+      <div class="upload-item">
+        <label>🀄 사주 명식 (만세력)</label>
+        <div class="upload-box" id="uploadBox_saju">
+          <button class="upload-clear-btn" id="clearBtn_saju" onclick="clearUpload('saju', event)">✕</button>
+          <input type="file" id="fileInput_saju" accept="image/*" onchange="handleUpload('saju', this)">
+          <img class="upload-preview" id="preview_saju">
+          <span class="upload-icon" id="uploadIcon_saju">🀄</span>
+          <span class="upload-label-text" id="uploadText_saju">클릭하여 사주 이미지 업로드</span>
+        </div>
+        <p class="upload-hint">사주 앱/사이트의 사주 명식 화면 캡처</p>
+      </div>
+
+      <!-- 자미두수 -->
+      <div class="upload-item">
+        <label>⭐ 자미두수 명반</label>
+        <div class="upload-box" id="uploadBox_ziwei">
+          <button class="upload-clear-btn" id="clearBtn_ziwei" onclick="clearUpload('ziwei', event)">✕</button>
+          <input type="file" id="fileInput_ziwei" accept="image/*" onchange="handleUpload('ziwei', this)">
+          <img class="upload-preview" id="preview_ziwei">
+          <span class="upload-icon" id="uploadIcon_ziwei">⭐</span>
+          <span class="upload-label-text" id="uploadText_ziwei">클릭하여 자미두수 이미지 업로드</span>
+        </div>
+        <p class="upload-hint">자미두수 계산 사이트의 명반 화면 캡처</p>
+      </div>
+
+      <!-- 서양 점성술 -->
+      <div class="upload-item">
+        <label>♈ 서양 점성술 차트</label>
+        <div class="upload-box" id="uploadBox_astro">
+          <button class="upload-clear-btn" id="clearBtn_astro" onclick="clearUpload('astro', event)">✕</button>
+          <input type="file" id="fileInput_astro" accept="image/*" onchange="handleUpload('astro', this)">
+          <img class="upload-preview" id="preview_astro">
+          <span class="upload-icon" id="uploadIcon_astro">♈</span>
+          <span class="upload-label-text" id="uploadText_astro">클릭하여 점성술 차트 업로드</span>
+        </div>
+        <p class="upload-hint">astro.com 등에서 네이탈 차트 화면 캡처</p>
+      </div>
+
+      <!-- 인도 점성술 -->
+      <div class="upload-item">
+        <label>🕉️ 베다(인도) 점성술</label>
+        <div class="upload-box" id="uploadBox_vedic">
+          <button class="upload-clear-btn" id="clearBtn_vedic" onclick="clearUpload('vedic', event)">✕</button>
+          <input type="file" id="fileInput_vedic" accept="image/*" onchange="handleUpload('vedic', this)">
+          <img class="upload-preview" id="preview_vedic">
+          <span class="upload-icon" id="uploadIcon_vedic">🕉️</span>
+          <span class="upload-label-text" id="uploadText_vedic">클릭하여 베다 차트 업로드</span>
+        </div>
+        <p class="upload-hint">베다 점성술 차트 화면 캡처</p>
+      </div>
+
+    </div>
+  </div>
   <div class="card">
     <div class="card-title">
       <span class="card-title-icon">🃏</span>
@@ -1147,7 +1307,69 @@ function updateApiPlaceholder() {
   document.getElementById('apiKey').placeholder = 'AIza...';
 }
 
-// ── API 키 localStorage 저장/불러오기 ──
+// ════════════════════════════════════════════════
+//  이미지 업로드 관리
+// ════════════════════════════════════════════════
+
+const uploadedImages = {}; // { saju: {base64, mimeType, label}, ... }
+
+function handleUpload(key, input) {
+  const file = input.files[0];
+  if (!file) return;
+
+  const labels = {
+    saju:  '사주 명식',
+    ziwei: '자미두수 명반',
+    astro: '서양 점성술 차트',
+    vedic: '베다 점성술 차트',
+  };
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const dataUrl = e.target.result;
+    const base64  = dataUrl.split(',')[1];
+    const mime    = file.type;
+
+    uploadedImages[key] = { base64, mimeType: mime, label: labels[key] };
+
+    // UI 업데이트
+    const box     = document.getElementById(`uploadBox_${key}`);
+    const preview = document.getElementById(`preview_${key}`);
+    const icon    = document.getElementById(`uploadIcon_${key}`);
+    const text    = document.getElementById(`uploadText_${key}`);
+    const clearBtn= document.getElementById(`clearBtn_${key}`);
+
+    preview.src     = dataUrl;
+    preview.style.display = 'block';
+    icon.style.display    = 'none';
+    text.textContent      = `✅ ${file.name}`;
+    text.style.color      = 'var(--teal)';
+    box.classList.add('has-image');
+    clearBtn.style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+}
+
+function clearUpload(key, event) {
+  event.stopPropagation();
+  delete uploadedImages[key];
+
+  const box     = document.getElementById(`uploadBox_${key}`);
+  const preview = document.getElementById(`preview_${key}`);
+  const icon    = document.getElementById(`uploadIcon_${key}`);
+  const text    = document.getElementById(`uploadText_${key}`);
+  const clearBtn= document.getElementById(`clearBtn_${key}`);
+  const input   = document.getElementById(`fileInput_${key}`);
+
+  preview.style.display  = 'none';
+  preview.src            = '';
+  icon.style.display     = '';
+  text.textContent       = `클릭하여 ${{saju:'사주',ziwei:'자미두수',astro:'점성술 차트',vedic:'베다 차트'}[key]} 이미지 업로드`;
+  text.style.color       = '';
+  box.classList.remove('has-image');
+  clearBtn.style.display = 'none';
+  input.value            = '';
+}
 function saveApiKey() {
   const key = document.getElementById('apiKey').value;
   if (key.trim()) {
@@ -1411,8 +1633,245 @@ function collectTarotCards() {
 }
 
 // ════════════════════════════════════════════════
-//  프롬프트 구성
+//  덱별 카드 해설 데이터
 // ════════════════════════════════════════════════
+
+const DECK_INTERPRETATIONS = {
+  '로제딕': {
+    note: '로제딕(Rosethic)은 장미(Rose)+고딕(Gothic) 테마의 창작 타로. 정방향 리딩 전용. 꽃=존재/캐릭터 상징 체계. 봉오리=미성숙/시작, 만개=완성/전성기, 시든=침체/끝. 서브컬처 친화적이며 심리·감정 표현에 탁월.',
+    major: {
+      '0. 광대 (The Fool)':            { upright: '시작, 출발, 순수성, 여행, 움트다, 한 자리에 머물지 않는 것. 새 출발의 열성과 열정이 있으나 불안정성·무모함도 내포', reversed: '(로제딕은 정방향 전용이나 역방향 시 반대 의미: 무모함, 충동, 준비 부족)' },
+      '1. 마법사 (The Magician)':       { upright: '재치, 상상력, 창조력, 독단적, 자신감. 뭘 원하는지 분명히 알고 능청스러운 여유를 가진 존재. 기발하고 어디로 튈지 모르는 에너지', reversed: '(자기주장 과잉, 분산된 에너지, 집중력 부족)' },
+      '2. 여사제 (The High Priestess)': { upright: '직관, 지혜, 배움, 신비로운, 비밀스러운. 학문적 성취 암시. 완벽한 달성보다는 배움의 과정 자체에 의미', reversed: '(비밀주의, 지나친 내성, 소통 거부)' },
+      '3. 여황제 (The Empress)':        { upright: '풍요로운, 풍성한, 번영, 부유, 주도적인. 물질·감정적 풍족함과 여유. 모성적 에너지, 창조와 결실', reversed: '(과잉 의존, 과보호, 창조력 막힘)' },
+      '4. 황제 (The Emperor)':          { upright: '권위, 권력적인, 위압적인, 힘, 안정적인. 현실적 기반과 책임감. 때로 이기적으로 보일 수 있으나 강력한 리더십', reversed: '(독재, 경직, 타인 수용 불가)' },
+      '5. 교황 (The Hierophant)':       { upright: '숭고한, 엄숙한, 엄격하지만 냉정하지 않은, 결혼(혹은 예식). 신성한 전통과 제도. 영적 가르침과 공식적 인정', reversed: '(형식주의, 규칙에 얽매임, 권위 남용)' },
+      '6. 연인 (The Lovers)':           { upright: '연결, 선택, 통합. 사랑은 필수가 아니나 서로 다른 것들의 만남과 화학반응. 관계의 깊어짐', reversed: '(선택 회피, 불균형한 관계, 가치관 충돌)' },
+      '7. 전차 (The Chariot)':          { upright: '역동적인, 승리, 성공, 복수, 쟁취, 저돌적인. 적극적으로 밀고 나가는 힘. 미래지향적 추진력', reversed: '(무모한 돌진, 방향 상실, 자제력 부족)' },
+      '8. 힘 (Strength)':               { upright: '영원한, 끈질긴, 의지, 지혜, 영적인 힘. 이성과 무의식의 조화. 내면의 힘으로 상황을 다스림', reversed: '(감정에 휩쓸림, 내면 갈등, 의지력 부족)' },
+      '9. 은둔자 (The Hermit)':         { upright: '치고 빠질 때를 아는 지혜, 학문, 깨달음, 영리함, 공부. 혼자만의 시간과 성찰로 더 강해지는 단계', reversed: '(고립, 도피, 지나친 은둔)' },
+      '10. 운명의 수레바퀴 (Wheel of Fortune)': { upright: '기회, 가변성, 흥망성쇠, 달라지는 상황. 만끽하려면 오히려 준비 없이 흘러가는 것이 나을 수도 있는 타이밍', reversed: '(불운의 순환, 저항, 타이밍 놓침)' },
+      '11. 정의 (Justice)':             { upright: '중립, 공평한, 공정한, 뚝심 있는, 질서. 감정보다 이성과 원칙으로 판단. 공정한 결과가 따름', reversed: '(불공정, 편향, 무책임)' },
+      '12. 매달린 사람 (The Hanged Man)': { upright: '구속, 속박, 고집, 자유의지 없는 상태. 강요된 기다림이나 정체기. 그러나 다른 시각을 얻는 시간', reversed: '(무의미한 희생, 변화 거부, 집착)' },
+      '13. 죽음 (Death)':               { upright: '끝, 종결, 손해, 상처, 그로 인한 상황의 변화. 완전한 마무리와 새로운 시작의 문턱', reversed: '(변화 저항, 미완의 끝, 질질 끄는 상황)' },
+      '14. 절제 (Temperance)':          { upright: '중용, 중재, 타협, 균형, 비교, 연결, 화합. 아직 완벽한 균형엔 못 미치지만 그 방향으로 나아가는 중', reversed: '(극단, 불균형, 타협 거부)' },
+      '15. 악마 (The Devil)':           { upright: '자신의 욕망과 집착을 인식하는 카드. 중심을 꼿꼿하게 유지하면서 진짜 원하는 것을 찾을 것을 촉구', reversed: '(완전한 속박, 탈출 불가, 자기파괴)' },
+      '16. 탑 (The Tower)':             { upright: '삶을 뒤엎을 만큼 큰 변화, 갈등의 폭발, 고난과 역경. 갑작스러운 붕괴이나 새 출발의 필연적 전제', reversed: '(위기 회피, 불안정한 기반 방치)' },
+      '17. 별 (The Star)':              { upright: '잠재력, 재생, 감정적 힘, 순환, 흘러가는 것들. 반짝이는 가능성. 혼자만의 빛이 아니라 함께하는 희망', reversed: '(희망 소진, 자신감 결여)' },
+      '18. 달 (The Moon)':              { upright: '정신적 힘의 극대화, 내면에 집중. 감정의 파도에 휩쓸리지 않으면서 직관과 무의식을 활용', reversed: '(감정 범람, 환상과 현실 혼돈)' },
+      '19. 태양 (The Sun)':             { upright: '성숙, 완성, 행복한, 승리, 성취, 성과. 에너지가 넘치며 더 성숙해지는 밝고 긍정적인 단계', reversed: '(자만, 에너지 과잉, 현실 외면)' },
+      '20. 심판 (Judgement)':           { upright: '생명력을 불어넣는, 축복, 변화, 희망. 지금 이 순간을 허투루 넘기지 말 것. 중요한 전환점의 부름', reversed: '(부름 외면, 자기평가 거부, 변화 지연)' },
+      '21. 세계 (The World)':           { upright: '종결(좋은 의미), 완성, 완결, 해피엔딩, 영원, 해외. 긴 여정의 완벽한 마무리와 새 차원으로의 도약', reversed: '(미완성, 아쉬운 끝, 완성 직전의 지연)' },
+    },
+    minor: {
+      // 로제딕 마이너: 수트명이 독자적 (크로스=소드, 글래스=컵, 소드=완즈?, 쥬얼=코인)
+      // 일반 웨이트 체계와 동일한 흐름 적용, 꽃/색상 상징 추가
+      'Ace of 소드 (Swords)':    { upright: '새로운 시작, 진실, 명료함. 봉오리 상태: 아직 가능성의 씨앗', reversed: '(혼란, 잘못된 시작)' },
+      '2 of 소드 (Swords)':     { upright: '결정 유보, 교착. 두 선택지 사이에서 균형 잡기', reversed: '(강요된 선택, 회피)' },
+      '3 of 소드 (Swords)':     { upright: '실연, 상처, 슬픔. 꽃잎이 찢기는 아픔이나 성장의 계기', reversed: '(치유, 상처 극복)' },
+      '4 of 소드 (Swords)':     { upright: '휴식, 회복, 재충전. 잠시 멈추는 것이 더 강해지는 길', reversed: '(강박적 활동, 번아웃)' },
+      '5 of 소드 (Swords)':     { upright: '갈등, 경쟁, 패배 혹은 불필요한 승리. 상처만 남는 싸움', reversed: '(화해, 자존심 내려놓음)' },
+      '6 of 소드 (Swords)':     { upright: '이동, 전환, 더 나은 곳으로. 힘들지만 앞으로 나아감', reversed: '(지연, 미룸, 현실 직시 거부)' },
+      '7 of 소드 (Swords)':     { upright: '전략, 단독행동, 영리한 움직임. 혼자 치고 빠지는 선택', reversed: '(기만 노출, 양심의 가책)' },
+      '8 of 소드 (Swords)':     { upright: '스스로 만든 제약, 좌절. 실제로는 벗어날 수 있는 상황', reversed: '(해방, 인식의 전환)' },
+      '9 of 소드 (Swords)':     { upright: '고립, 불안, 고뇌. 새벽에 홀로 깨어 있는 두려움', reversed: '(걱정 완화, 도움 수용)' },
+      '10 of 소드 (Swords)':    { upright: '끝, 배신, 고통의 정점. 완전히 바닥을 쳤으나 이제 오를 일만 남음', reversed: '(회복 시작, 최악에서 벗어남)' },
+      'Ace of 컵 (Cups)':        { upright: '감성적 충만, 새로운 감정의 시작. 감정이 봉오리처럼 피어오름', reversed: '(감정 억압, 공허)' },
+      '2 of 컵 (Cups)':         { upright: '연결, 상호 감정, 조화. 두 존재의 진심 어린 만남', reversed: '(단절, 일방적 감정)' },
+      '3 of 컵 (Cups)':         { upright: '축제, 우정, 함께하는 기쁨. 새로운 우정의 달성', reversed: '(과잉, 낭비, 관계 균열)' },
+      '4 of 컵 (Cups)':         { upright: '권태, 불만, 새로운 기회를 놓침. 지금 눈앞의 것에 집중하지 못함', reversed: '(새 관심, 행동 개시)' },
+      '5 of 컵 (Cups)':         { upright: '상실, 후회, 슬픔. 타인에 의존했을 때의 환상이 깨짐', reversed: '(수용, 앞으로 나아감)' },
+      '6 of 컵 (Cups)':         { upright: '추억, 향수, 순수했던 시절. 과거의 아름다움이 현재에 영향', reversed: '(과거 집착, 현실 도피)' },
+      '7 of 컵 (Cups)':         { upright: '혼란, 환상, 선택지 과잉. 일의 순서를 정리할 필요', reversed: '(명료함 회복, 현실 직시)' },
+      '8 of 컵 (Cups)':         { upright: '훨씬 깊은 수준의 무언가를 찾아 떠남. 지금 것을 내려놓는 용기', reversed: '(집착, 떠나지 못함)' },
+      '9 of 컵 (Cups)':         { upright: '소원 성취, 만족, 풍족함. 바라던 것이 이루어지는 시기', reversed: '(과욕, 물질적 집착)' },
+      '10 of 컵 (Cups)':        { upright: '행복, 가족적 충만, 감정적 완성. 오랜 바람의 실현', reversed: '(관계 균열, 겉과 속이 다름)' },
+      'Ace of 완즈/지팡이 (Wands)': { upright: '창조적 불꽃, 새 프로젝트, 열정의 씨앗', reversed: '(창의력 막힘, 시작 두려움)' },
+      '2 of 완즈/지팡이 (Wands)':   { upright: '계획, 미래 바라봄, 가능성 모색', reversed: '(결단력 부족, 방향 상실)' },
+      '3 of 완즈/지팡이 (Wands)':   { upright: '확장, 결과 기다림, 멀리 내다봄', reversed: '(지연, 예상 외 장애)' },
+      '4 of 완즈/지팡이 (Wands)':   { upright: '축하, 안정, 공동체의 기쁨', reversed: '(불안정, 미완의 성취)' },
+      '5 of 완즈/지팡이 (Wands)':   { upright: '경쟁, 갈등, 에너지의 충돌. 성장을 위한 마찰', reversed: '(내부 갈등, 소모적 경쟁)' },
+      '6 of 완즈/지팡이 (Wands)':   { upright: '승리, 인정, 성공. 노력이 공개적으로 빛을 발함', reversed: '(자만, 인정 욕구)' },
+      '7 of 완즈/지팡이 (Wands)':   { upright: '문제를 하나씩 해결할 것. 쌓아두어 감당 못할 지경으로 만들지 말 것', reversed: '(방어적, 압도당함)' },
+      '8 of 완즈/지팡이 (Wands)':   { upright: '빠른 진행, 소식, 움직임의 가속', reversed: '(지연, 혼선, 서두름)' },
+      '9 of 완즈/지팡이 (Wands)':   { upright: '경계를 늦출 것, 다른 사람의 도움을 받아들일 것. 버텨온 끈기', reversed: '(완고함, 피로 누적)' },
+      '10 of 완즈/지팡이 (Wands)':  { upright: '과부하, 책임 과잉, 혼자 다 지려는 무게', reversed: '(짐 내려놓음, 위임)' },
+      'Ace of 코인/펜타클 (Pentacles)': { upright: '새로이 열리는 문, 새로운 직장, 물질적 기회의 씨앗', reversed: '(기회 놓침, 재정 불안)' },
+      '2 of 코인/펜타클 (Pentacles)':  { upright: '균형, 유연한 적응, 변화 속 조율', reversed: '(과부하, 균형 붕괴)' },
+      '3 of 코인/펜타클 (Pentacles)':  { upright: '새로운 기술 배움, 능력 개발, 팀워크', reversed: '(협력 부재, 노력 낭비)' },
+      '4 of 코인/펜타클 (Pentacles)':  { upright: '공동 수익, 소유욕, 안정을 지키려는 마음', reversed: '(인색함, 지나친 집착)' },
+      '5 of 코인/펜타클 (Pentacles)':  { upright: '재정 어려움, 결핍감. 도움을 구할 것', reversed: '(회복, 도움 수용)' },
+      '6 of 코인/펜타클 (Pentacles)':  { upright: '나눔, 관대함, 균형 있는 주고받음', reversed: '(불균형, 조건부 베풂)' },
+      '7 of 코인/펜타클 (Pentacles)':  { upright: '고된 노동이나 수확기가 가까움. 기다림의 보상', reversed: '(조급함, 결과 없는 노력)' },
+      '8 of 코인/펜타클 (Pentacles)':  { upright: '일하는 장인, 능력의 시연, 꾸준한 숙련', reversed: '(완벽주의, 발전 없는 반복)' },
+      '9 of 코인/펜타클 (Pentacles)':  { upright: '독립, 풍요, 자기만족. 혼자서도 완전한 존재', reversed: '(과잉 의존, 고립)' },
+      '10 of 코인/펜타클 (Pentacles)': { upright: '가족의 번영, 안정적 유산, 물질적 완성', reversed: '(가족 갈등, 재정 위기)' },
+    },
+    courtNote: '로제딕 코트카드는 꽃의 성숙도와 색상으로 캐릭터 에너지를 표현. Page=봉오리(어리고 순수), Knight=역동적 성장 중, Queen=만개한 여성적 에너지, King=완숙한 리더십.',
+  },
+    note: '드래곤 타로는 용(Dragon)을 모든 카드의 상징으로 사용. 강렬하고 원초적인 에너지, 변환, 힘의 상징이 강조됨.',
+    major: {
+      '0. 광대 (The Fool)':           { upright: '인생의 새로운 장 시작, 독창성, 자유로운 출발', reversed: '무모함, 경솔한 행동' },
+      '1. 마법사 (The Magician)':      { upright: '의지와 능력의 집중, 창조적 힘 발현', reversed: '의지력 부족, 기회 낭비' },
+      '2. 여사제 (The High Priestess)':{ upright: '직관을 따르라, 숨겨진 진실', reversed: '미신적, 현혹됨' },
+      '3. 여황제 (The Empress)':       { upright: '풍요, 창조, 결실, 모성적 에너지', reversed: '의존성, 창조력 막힘' },
+      '4. 황제 (The Emperor)':         { upright: '권위, 질서, 안정적 기반', reversed: '거만함, 타인을 받아들이지 못함' },
+      '5. 교황 (The Hierophant)':      { upright: '전통, 제도, 정신적 가르침', reversed: '권위에 대한 반항, 틀에 박힌 사고' },
+      '6. 연인 (The Lovers)':          { upright: '사랑, 선택, 조화로운 합일', reversed: '강박적 관계, 관계에서 배움 거절' },
+      '7. 전차 (The Chariot)':         { upright: '의지력으로 장애 극복, 전진', reversed: '방향 상실, 통제력 부재' },
+      '8. 힘 (Strength)':              { upright: '의지가 시작이다. 통제된 힘', reversed: '지나치게 감성적, 앞뒤 가리지 않음' },
+      '9. 은둔자 (The Hermit)':        { upright: '내면의 빛을 따라가라, 고독한 성찰', reversed: '고립, 세상과의 단절' },
+      '10. 운명의 수레바퀴 (Wheel of Fortune)': { upright: '충만, 신념, 기회의 순환', reversed: '불운, 흐름에 저항' },
+      '11. 정의 (Justice)':            { upright: '공정한 결과, 균형, 올바른 판단', reversed: '불공정, 편향된 시각' },
+      '12. 매달린 사람 (The Hanged Man)': { upright: '중지된 행동, 지연 기간, 새로운 관점', reversed: '세상을 거꾸로 보기, 혼란 상태' },
+      '13. 죽음 (Death)':              { upright: '변환, 끝과 새 시작, 탈피', reversed: '변화 저항, 낡은 것에 집착' },
+      '14. 절제 (Temperance)':         { upright: '자신의 생을 반성, 성숙, 균형', reversed: '과거에 얽매임, 지나치게 내성적' },
+      '15. 악마 (The Devil)':          { upright: '속박, 물질적 집착, 두려움에 갇힘', reversed: '해방, 속박에서 벗어남' },
+      '16. 탑 (The Tower)':            { upright: '갑작스러운 붕괴, 충격적 변화', reversed: '불안정한 기초, 대강 세워진 것들' },
+      '17. 별 (The Star)':             { upright: '희망, 영감, 치유', reversed: '희망 상실, 영감 고갈' },
+      '18. 달 (The Moon)':             { upright: '완성, 성취, 꿈의 세계, 순환의 끝', reversed: '공상 속에 살며 현실 부정' },
+      '19. 태양 (The Sun)':            { upright: '성공, 기쁨, 활력, 밝은 미래', reversed: '에너지 과잉, 자기중심적' },
+      '20. 심판 (Judgement)':          { upright: '강력한 변화 에너지, 재탄생', reversed: '언어장애, 공포증, 망상' },
+      '21. 세계 (The World)':          { upright: '완성, 통합, 목표 달성', reversed: '미완성, 지연' },
+    },
+    minor: {
+      // COINS (Pentacles)
+      'Ace of 코인/펜타클 (Pentacles)':   { upright: '새로이 열리는 문, 새로운 직장/재정적 기회', reversed: '기회 놓침, 물질적 불안' },
+      '2 of 코인/펜타클 (Pentacles)':     { upright: '균형, 변화 속 적응', reversed: '과부하, 균형 상실' },
+      '3 of 코인/펜타클 (Pentacles)':     { upright: '새로운 기술 습득, 능력 개발', reversed: '협력 부재, 노력 낭비' },
+      '4 of 코인/펜타클 (Pentacles)':     { upright: '공동 수익, 소유욕', reversed: '인색함, 집착' },
+      '5 of 코인/펜타클 (Pentacles)':     { upright: '재정적 어려움, 결핍감', reversed: '회복, 도움 수용' },
+      '6 of 코인/펜타클 (Pentacles)':     { upright: '나눔, 관대함', reversed: '불균형한 관계, 빚' },
+      '7 of 코인/펜타클 (Pentacles)':     { upright: '고된 노동, 수확기가 가까움', reversed: '조급함, 결과 없는 노력' },
+      '8 of 코인/펜타클 (Pentacles)':     { upright: '장인 정신, 능력 시연', reversed: '완벽주의, 발전 없는 반복' },
+      '9 of 코인/펜타클 (Pentacles)':     { upright: '독립, 풍요, 자기만족', reversed: '과잉 의존' },
+      '10 of 코인/펜타클 (Pentacles)':    { upright: '가족의 번영, 안정적 유산', reversed: '가족 갈등, 재정 위기' },
+      // SWORDS
+      'Ace of 소드 (Swords)':            { upright: '새로운 시작, 진실의 칼날, 명료함', reversed: '혼란, 잘못된 판단' },
+      '2 of 소드 (Swords)':              { upright: '결정 회피, 교착 상태', reversed: '결단, 정보 공개' },
+      '3 of 소드 (Swords)':              { upright: '실연, 슬픔, 대화 단절', reversed: '상처 치유, 용서' },
+      '4 of 소드 (Swords)':              { upright: '휴식, 회복, 잠시 멈춤', reversed: '강박적 활동' },
+      '5 of 소드 (Swords)':              { upright: '갈등, 다른 길로 들어섬', reversed: '화해, 집착 내려놓음' },
+      '6 of 소드 (Swords)':              { upright: '이동, 더 나은 곳으로 전환', reversed: '이동 지연' },
+      '7 of 소드 (Swords)':              { upright: '전략, 단독 행동', reversed: '기만 노출' },
+      '8 of 소드 (Swords)':              { upright: '좌절, 인내 필요, 해결 방법 못 찾음', reversed: '제약에서 해방' },
+      '9 of 소드 (Swords)':              { upright: '고립, 새로운 대화와 접촉 필요', reversed: '걱정 완화' },
+      '10 of 소드 (Swords)':             { upright: '끝, 배신, 고통의 정점', reversed: '회복, 바닥에서 일어남' },
+      // WANDS
+      'Ace of 완즈/지팡이 (Wands)':      { upright: '창조적 불꽃, 새 프로젝트 시작', reversed: '창의력 막힘' },
+      '2 of 완즈/지팡이 (Wands)':        { upright: '계획, 미래를 바라봄', reversed: '두려움으로 인한 계획 포기' },
+      '3 of 완즈/지팡이 (Wands)':        { upright: '확장, 결과 기다림', reversed: '지연, 예상 못한 장애' },
+      '4 of 완즈/지팡이 (Wands)':        { upright: '축하, 안정, 성취', reversed: '불안정한 기반' },
+      '5 of 완즈/지팡이 (Wands)':        { upright: '경쟁, 갈등, 도전', reversed: '갈등 회피' },
+      '6 of 완즈/지팡이 (Wands)':        { upright: '승리, 인정받음', reversed: '자만, 실패 두려움' },
+      '7 of 완즈/지팡이 (Wands)':        { upright: '문제를 하나씩 해결, 방어적 자세', reversed: '포기, 압도됨' },
+      '8 of 완즈/지팡이 (Wands)':        { upright: '빠른 움직임, 소식', reversed: '지연, 좌절' },
+      '9 of 완즈/지팡이 (Wands)':        { upright: '경계 늦출 것, 타인의 도움 수용', reversed: '지나친 경계' },
+      '10 of 완즈/지팡이 (Wands)':       { upright: '과중한 짐, 책임 과부하', reversed: '짐 내려놓음' },
+      // CUPS
+      'Ace of 컵 (Cups)':               { upright: '감성적 충만, 새로운 사랑/관계', reversed: '감정 억압' },
+      '2 of 컵 (Cups)':                 { upright: '상호 끌림, 파트너십', reversed: '관계 불균형' },
+      '3 of 컵 (Cups)':                 { upright: '새로운 우정, 축하', reversed: '과잉 사교, 삼각관계' },
+      '4 of 컵 (Cups)':                 { upright: '권태, 무관심', reversed: '새로운 기회 수용' },
+      '5 of 컵 (Cups)':                 { upright: '타인 의존 시 환상 깨달음, 상실감', reversed: '회복, 남은 것에 집중' },
+      '6 of 컵 (Cups)':                 { upright: '향수, 과거의 좋은 기억', reversed: '과거에 갇힘' },
+      '7 of 컵 (Cups)':                 { upright: '혼란, 일의 순서 정리 필요', reversed: '현실 직시' },
+      '8 of 컵 (Cups)':                 { upright: '훨씬 깊은 무언가를 찾음, 떠남', reversed: '미련, 포기 못함' },
+      '9 of 컵 (Cups)':                 { upright: '소원 성취, 만족', reversed: '욕심, 자기만족에 그침' },
+      '10 of 컵 (Cups)':                { upright: '완전한 행복, 가족의 조화', reversed: '가정 불화' },
+    }
+  },
+  '로제딕': {
+    note: '로제딕 타로는 장미와 꽃의 이미지로 감성적이고 섬세한 에너지를 표현. 관계와 감정의 미묘한 결을 읽는 데 강함.',
+    major: {
+      '0. 광대 (The Fool)':            { upright: '순수한 시작, 두려움 없는 도약', reversed: '무모한 행동, 준비 부족' },
+      '1. 마법사 (The Magician)':       { upright: '집중된 의도, 능력의 발현', reversed: '의지력 부족, 속임수' },
+      '2. 여사제 (The High Priestess)': { upright: '내면의 목소리, 직관', reversed: '비밀, 무지' },
+      '3. 여황제 (The Empress)':        { upright: '풍요, 아름다움, 창조적 결실', reversed: '창의력 막힘, 의존' },
+      '4. 황제 (The Emperor)':          { upright: '안정, 구조, 아버지적 권위', reversed: '경직됨, 지배욕' },
+      '5. 교황 (The Hierophant)':       { upright: '전통, 조언자', reversed: '독단, 규범 거부' },
+      '6. 연인 (The Lovers)':           { upright: '선택, 사랑, 가치 일치', reversed: '불일치, 선택 회피' },
+      '7. 전차 (The Chariot)':          { upright: '승리, 의지로 전진', reversed: '방향 상실, 충동' },
+      '8. 힘 (Strength)':               { upright: '부드러운 힘, 내면의 용기', reversed: '자기 의심' },
+      '9. 은둔자 (The Hermit)':         { upright: '내면 탐구, 홀로서기', reversed: '고립, 냉담' },
+      '10. 운명의 수레바퀴 (Wheel of Fortune)': { upright: '전환점, 행운의 흐름', reversed: '저항, 악운' },
+      '11. 정의 (Justice)':             { upright: '공정, 진실, 책임', reversed: '불공정, 회피' },
+      '12. 매달린 사람 (The Hanged Man)':{ upright: '기다림, 새 관점, 헌신', reversed: '지연에 저항' },
+      '13. 죽음 (Death)':               { upright: '끝과 새 시작, 변화', reversed: '변화 거부' },
+      '14. 절제 (Temperance)':          { upright: '균형, 인내, 치유', reversed: '극단, 불균형' },
+      '15. 악마 (The Devil)':           { upright: '집착, 속박', reversed: '해방' },
+      '16. 탑 (The Tower)':             { upright: '충격, 갑작스러운 변화', reversed: '재앙 회피, 두려움' },
+      '17. 별 (The Star)':              { upright: '희망, 영감, 치유', reversed: '절망, 불신' },
+      '18. 달 (The Moon)':              { upright: '무의식, 환상, 불안', reversed: '혼란 해소' },
+      '19. 태양 (The Sun)':             { upright: '기쁨, 성공, 활력', reversed: '과시, 자기중심' },
+      '20. 심판 (Judgement)':           { upright: '각성, 재탄생, 부름', reversed: '자기 비하, 변화 거부' },
+      '21. 세계 (The World)':           { upright: '완성, 성취, 통합', reversed: '미완성, 정체' },
+    },
+    minor: {} // 추후 추가 예정
+  }
+};
+
+// 타로 카드 해설 추출 함수
+function getDeckInterpretation(deckName, cardName, direction) {
+  const deckData = DECK_INTERPRETATIONS[deckName];
+  if (!deckData) return null;
+
+  // 메이저 아르카나 확인
+  if (deckData.major && deckData.major[cardName]) {
+    const interp = deckData.major[cardName];
+    return direction === '역방향' ? interp.reversed : interp.upright;
+  }
+
+  // 마이너 아르카나 확인 (슈트 포함 키로 매칭)
+  if (deckData.minor) {
+    for (const key of Object.keys(deckData.minor)) {
+      if (cardName.includes(key) || key.includes(cardName.split(' of ')[0])) {
+        const interp = deckData.minor[key];
+        return direction === '역방향' ? interp.reversed : interp.upright;
+      }
+    }
+  }
+  return null;
+}
+
+// 타로 카드 해설 블록 생성
+function buildDeckInterpretationBlock(tarotCards) {
+  const lines = [];
+  tarotCards.forEach(cardStr => {
+    // [포지션] 덱: xxx / 카드: xxx / 방향: xxx 형식 파싱
+    const deckMatch = cardStr.match(/덱: ([^/]+)/);
+    const cardMatch = cardStr.match(/카드: ([^/]+)/);
+    const dirMatch  = cardStr.match(/방향: (.+)$/);
+    if (!deckMatch || !cardMatch) return;
+
+    const deck = deckMatch[1].trim();
+    const card = cardMatch[1].trim();
+    const dir  = dirMatch ? dirMatch[1].trim() : '정방향';
+
+    const interp = getDeckInterpretation(deck, card, dir);
+    if (interp) {
+      lines.push(`  · ${cardStr} → [${deck} 해설] ${interp}`);
+    } else {
+      lines.push(`  · ${cardStr}`);
+    }
+  });
+
+  if (lines.length === 0) return '';
+
+  // 사용된 덱 노트 추가
+  const usedDecks = [...new Set(tarotCards.map(c => {
+    const m = c.match(/덱: ([^/]+)/);
+    return m ? m[1].trim() : null;
+  }).filter(Boolean))];
+
+  const deckNotes = usedDecks.map(d => {
+    const data = DECK_INTERPRETATIONS[d];
+    return data ? `[${d}] ${data.note}` : null;
+  }).filter(Boolean);
+
+  return (deckNotes.length ? '## 사용 덱 특성\n' + deckNotes.join('\n') + '\n\n' : '') +
+         '## 타로 카드 (덱별 해설 포함)\n' + lines.join('\n');
+}
 
 function buildPrompt(data) {
   const { name, gender, birthStr, sajuData, questionType, questionText, tarotCards, partnerInfo, spreadInfo } = data;
@@ -1438,16 +1897,23 @@ ${spreadInfo.positions.map(p => `  · ${p}`).join('\n')}
 ` : '';
 
   const tarotBlock = tarotCards.length > 0
-    ? tarotCards.join('\n')
+    ? buildDeckInterpretationBlock(tarotCards)
     : '(타로 카드 미입력)';
 
   const now = new Date();
   const todayStr = `${now.getFullYear()}년 ${now.getMonth()+1}월 ${now.getDate()}일`;
   const yearStr  = `${now.getFullYear()}년 (${천간漢[(now.getFullYear()-4)%10]}${지지漢[((now.getFullYear()-4)%12+12)%12]}년)`;
 
+  const hasImages = Object.keys(uploadedImages).length > 0;
+  const imageInstruction = hasImages
+    ? `⚠️ 중요: 위에 업로드된 이미지들을 최우선으로 활용하세요. 이미지에 있는 실제 데이터(사주 명식, 자미두수 명반, 점성술 차트 등)를 정확히 읽어서 분석하세요. 이미지에 없는 항목만 생년월일로 추정하세요.`
+    : `⚠️ 이미지가 없으므로 생년월일(${birthStr})을 바탕으로 각 점술을 추정 분석하세요.`;
+
   return `당신은 10년 경력의 하이브리드 점술사입니다. 동양 명리학, 서양 점성술, 타로, 자미두수, 숙요점, 베다 점성술을 모두 통합하여 분석합니다.
 
 ⚠️ 오늘 상담 날짜: ${todayStr} / 올해: ${yearStr} — 대운·세운·트랜짓 분석 시 반드시 이 연도를 기준으로 하세요.
+
+${imageInstruction}
 
 ## 고객 정보
 - 이름: ${name}
@@ -1670,12 +2136,30 @@ function calcSaju(year, month, day, hour, calendarType) {
 //  API 호출 — Gemini 2.5 Flash (스트리밍)
 // ════════════════════════════════════════════════
 
-async function callGeminiAPI(apiKey, prompt, onChunk) {
+async function callGeminiAPI(apiKey, prompt, images, onChunk) {
   const MODEL = 'gemini-2.5-flash-lite';
   const URL   = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:streamGenerateContent?alt=sse&key=${apiKey}`;
 
+  // 멀티모달 콘텐츠 구성 (텍스트 + 이미지)
+  const parts = [];
+
+  // 업로드된 이미지들 먼저
+  const imageKeys = Object.keys(images);
+  if (imageKeys.length > 0) {
+    parts.push({ text: `## 업로드된 점술 데이터 이미지 (${imageKeys.length}개)\n아래 이미지들을 정확히 읽고 분석에 활용하세요:\n` });
+    imageKeys.forEach(key => {
+      const img = images[key];
+      parts.push({ text: `\n### [${img.label}]\n` });
+      parts.push({ inlineData: { mimeType: img.mimeType, data: img.base64 } });
+    });
+    parts.push({ text: '\n---\n' });
+  }
+
+  // 프롬프트 텍스트
+  parts.push({ text: prompt });
+
   const body = JSON.stringify({
-    contents: [{ parts: [{ text: prompt }] }],
+    contents: [{ parts }],
     generationConfig: { maxOutputTokens: 8000, temperature: 0.9 }
   });
 
@@ -1690,10 +2174,10 @@ async function callGeminiAPI(apiKey, prompt, onChunk) {
     throw new Error(`Gemini API 오류 (${res.status}): ${err?.error?.message || res.statusText}`);
   }
 
-  const reader = res.body.getReader();
+  const reader  = res.body.getReader();
   const decoder = new TextDecoder();
-  let fullText = '';
-  let buffer = '';
+  let fullText  = '';
+  let buffer    = '';
 
   while (true) {
     const { done, value } = await reader.read();
@@ -1701,7 +2185,7 @@ async function callGeminiAPI(apiKey, prompt, onChunk) {
 
     buffer += decoder.decode(value, { stream: true });
     const lines = buffer.split('\n');
-    buffer = lines.pop(); // 마지막 불완전한 줄은 버퍼에 보관
+    buffer = lines.pop();
 
     for (const line of lines) {
       if (!line.startsWith('data: ')) continue;
@@ -1710,14 +2194,10 @@ async function callGeminiAPI(apiKey, prompt, onChunk) {
       try {
         const parsed = JSON.parse(jsonStr);
         const chunk  = parsed.candidates?.[0]?.content?.parts?.[0]?.text || '';
-        if (chunk) {
-          fullText += chunk;
-          onChunk(fullText); // 실시간으로 화면에 표시
-        }
+        if (chunk) { fullText += chunk; onChunk(fullText); }
       } catch {}
     }
   }
-
   return fullText;
 }
 
@@ -1809,7 +2289,7 @@ async function generateReport() {
   document.getElementById('outputSection').classList.add('show');
 
   try {
-    await callGeminiAPI(apiKey, prompt, (text) => {
+    await callGeminiAPI(apiKey, prompt, uploadedImages, (text) => {
       outputBox.textContent = text;
     });
     document.getElementById('outputSection').scrollIntoView({ behavior: 'smooth' });
