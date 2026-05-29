@@ -626,9 +626,13 @@
     cursor: pointer;
     width: 100%;
     height: 100%;
-    padding: 0;
-    border: none;
-    background: none;
+    padding: 0 !important;
+    border: none !important;
+    border-radius: 0 !important;
+    background: none !important;
+    box-shadow: none !important;
+    font-size: 0;
+    z-index: 1;
   }
 
   .upload-icon { font-size: 24px; }
@@ -653,7 +657,7 @@
     font-size: 10px;
     padding: 2px 7px;
     cursor: pointer;
-    z-index: 2;
+    z-index: 3;
     display: none;
   }
 
@@ -903,10 +907,10 @@
 
       <!-- 사주 -->
       <div class="upload-item">
-        <label>🀄 사주 명식 (만세력)</label>
-        <div class="upload-box" id="uploadBox_saju">
+        <label style="text-transform:none;letter-spacing:0;font-size:13px;color:var(--text-secondary);">🀄 사주 명식 (만세력)</label>
+        <input type="file" id="fileInput_saju" accept="image/*" onchange="handleUpload('saju', this)" style="display:none">
+        <div class="upload-box" id="uploadBox_saju" onclick="document.getElementById('fileInput_saju').click()">
           <button class="upload-clear-btn" id="clearBtn_saju" onclick="clearUpload('saju', event)">✕</button>
-          <input type="file" id="fileInput_saju" accept="image/*" onchange="handleUpload('saju', this)">
           <img class="upload-preview" id="preview_saju">
           <span class="upload-icon" id="uploadIcon_saju">🀄</span>
           <span class="upload-label-text" id="uploadText_saju">클릭하여 사주 이미지 업로드</span>
@@ -916,10 +920,10 @@
 
       <!-- 자미두수 -->
       <div class="upload-item">
-        <label>⭐ 자미두수 명반</label>
-        <div class="upload-box" id="uploadBox_ziwei">
+        <label style="text-transform:none;letter-spacing:0;font-size:13px;color:var(--text-secondary);">⭐ 자미두수 명반</label>
+        <input type="file" id="fileInput_ziwei" accept="image/*" onchange="handleUpload('ziwei', this)" style="display:none">
+        <div class="upload-box" id="uploadBox_ziwei" onclick="document.getElementById('fileInput_ziwei').click()">
           <button class="upload-clear-btn" id="clearBtn_ziwei" onclick="clearUpload('ziwei', event)">✕</button>
-          <input type="file" id="fileInput_ziwei" accept="image/*" onchange="handleUpload('ziwei', this)">
           <img class="upload-preview" id="preview_ziwei">
           <span class="upload-icon" id="uploadIcon_ziwei">⭐</span>
           <span class="upload-label-text" id="uploadText_ziwei">클릭하여 자미두수 이미지 업로드</span>
@@ -929,10 +933,10 @@
 
       <!-- 서양 점성술 -->
       <div class="upload-item">
-        <label>♈ 서양 점성술 차트</label>
-        <div class="upload-box" id="uploadBox_astro">
+        <label style="text-transform:none;letter-spacing:0;font-size:13px;color:var(--text-secondary);">♈ 서양 점성술 차트</label>
+        <input type="file" id="fileInput_astro" accept="image/*" onchange="handleUpload('astro', this)" style="display:none">
+        <div class="upload-box" id="uploadBox_astro" onclick="document.getElementById('fileInput_astro').click()">
           <button class="upload-clear-btn" id="clearBtn_astro" onclick="clearUpload('astro', event)">✕</button>
-          <input type="file" id="fileInput_astro" accept="image/*" onchange="handleUpload('astro', this)">
           <img class="upload-preview" id="preview_astro">
           <span class="upload-icon" id="uploadIcon_astro">♈</span>
           <span class="upload-label-text" id="uploadText_astro">클릭하여 점성술 차트 업로드</span>
@@ -942,10 +946,10 @@
 
       <!-- 인도 점성술 -->
       <div class="upload-item">
-        <label>🕉️ 베다(인도) 점성술</label>
-        <div class="upload-box" id="uploadBox_vedic">
+        <label style="text-transform:none;letter-spacing:0;font-size:13px;color:var(--text-secondary);">🕉️ 베다(인도) 점성술</label>
+        <input type="file" id="fileInput_vedic" accept="image/*" onchange="handleUpload('vedic', this)" style="display:none">
+        <div class="upload-box" id="uploadBox_vedic" onclick="document.getElementById('fileInput_vedic').click()">
           <button class="upload-clear-btn" id="clearBtn_vedic" onclick="clearUpload('vedic', event)">✕</button>
-          <input type="file" id="fileInput_vedic" accept="image/*" onchange="handleUpload('vedic', this)">
           <img class="upload-preview" id="preview_vedic">
           <span class="upload-icon" id="uploadIcon_vedic">🕉️</span>
           <span class="upload-label-text" id="uploadText_vedic">클릭하여 베다 차트 업로드</span>
